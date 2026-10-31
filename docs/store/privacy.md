@@ -15,8 +15,9 @@ _Last updated / Dernière mise à jour : 2026-10-31_
   any device outside the home network.
 - **Outbound requests.** To find a book's details and cover, and to suggest books to buy, your
   household's server sends the book's ISBN, author names or subjects to
-  [Open Library](https://openlibrary.org) (Internet Archive), under its own privacy policy. No
-  personal data is sent.
+  [Open Library](https://openlibrary.org) (Internet Archive), and only the book's ISBN to
+  [Google Books](https://books.google.com) (Google), each under its own privacy policy. No API key,
+  no account and no personal data are sent.
 - **Camera.** The camera is used only to read book barcodes and the server's QR code. Pictures are
   processed on the phone and never stored or sent.
 - **Deleting your data.** Your household controls its server: deleting the server's data folder
@@ -40,8 +41,9 @@ jamais ton foyer.
   refuse tout appareil extérieur au réseau de la maison.
 - **Requêtes sortantes.** Pour trouver les informations et la couverture d'un livre, et proposer
   des livres à acheter, le serveur de ton foyer envoie l'ISBN, des noms d'auteurs ou des thèmes à
-  [Open Library](https://openlibrary.org) (Internet Archive), selon sa propre politique de
-  confidentialité. Aucune donnée personnelle n'est envoyée.
+  [Open Library](https://openlibrary.org) (Internet Archive), et seulement l'ISBN à
+  [Google Books](https://books.google.com) (Google), chacun selon sa propre politique de
+  confidentialité. Ni clé d'API, ni compte, ni donnée personnelle ne sont envoyés.
 - **Caméra.** La caméra sert uniquement à lire les codes-barres des livres et le QR code du
   serveur. Les images sont traitées sur le téléphone, jamais enregistrées ni envoyées.
 - **Supprimer tes données.** Ton foyer maîtrise son serveur : supprimer son dossier de données

@@ -7,14 +7,15 @@ who is reading what, and what the household thinks of them. No account, no cloud
 Free and open source under the [AGPL-3.0](LICENSE). The app speaks French and English.
 
 - **Scan to add**: point the phone at the barcode on the back of a book; title, authors and cover
-  come from Open Library, one tap adds it.
+  come from Open Library and Google Books, one tap adds it.
 - **Who has it?** Every book shows whether it is free, being read (and by whom) or lent to a friend.
   Starting a book "takes" it, so nobody looks for it in vain.
 - **Household reviews**: everyone writes what they thought; the others read it on the book.
 - **My readings**: what I am reading, what I have finished.
 - **For you**: books already on the shelf that match what you liked, and ideas to buy.
 - **Stays at home**: the server only answers devices on the home network. The only outbound calls
-  are the ISBN lookups and the reading ideas (Open Library).
+  are the ISBN lookups (Open Library, Google Books: only the ISBN is sent) and the reading ideas
+  (Open Library).
 
 ## Screenshots
 

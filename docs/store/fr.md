@@ -49,7 +49,7 @@ TOUT RESTE À LA MAISON
 ou Node.js, quelques minutes, mode d'emploi sur GitHub). Les téléphones lui parlent uniquement
 par le Wi-Fi de la maison. Pas de compte, pas de mot de passe, pas de cloud, pas de publicité,
 aucun pistage. Les seules requêtes qui sortent de chez toi sont les recherches de livres sur
-Open Library.
+Open Library et Google Books (seul l'ISBN est envoyé).
 
 LIBRE ET GRATUIT
 Étagère est un logiciel libre (AGPL-3.0). Le code, le serveur et la documentation sont sur

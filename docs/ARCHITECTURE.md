@@ -2,7 +2,8 @@
 
 Étagère is a household book library. A small server runs on a computer at home; every phone of
 the household connects to it over the home Wi-Fi. No accounts, no passwords, no cloud. The only
-outbound traffic is the ISBN lookup and the "ideas to buy" suggestions (Open Library).
+outbound traffic is the ISBN lookup (Open Library and Google Books: only the ISBN is sent), the
+cover download of a looked-up book, and the "ideas to buy" suggestions (Open Library).
 
 This document is the contract every contributor (human or agent) codes against. Change it in the
 same commit as the code when a decision moves.
@@ -155,17 +156,26 @@ the app with `buildTestApp()` (`server/src/__tests__/support/test-app.ts`): in-m
 - `DELETE /api/books/:id` → `204`
 - `GET /api/lookup/:isbn` → `200 BookCandidate` | `400 invalid_isbn` | `404 not_found` |
   `409 already_in_library` | `502 upstream_unavailable`. Accepts ISBN-10 or ISBN-13 with or without
-  hyphens; normalised to ISBN-13. Source: Open Library (`/isbn/{isbn}.json` + authors + works for
-  subjects; covers `covers.openlibrary.org/b/isbn/{isbn}-L.jpg?default=false`). 5 s timeout for the whole lookup.
-  Genres = up to 5 readable work subjects (catalogue tags such as `nyt:…` or "Accessible book" dropped);
-  missing authors or work do not fail the lookup.
-- `GET /api/covers/:file` → the cover image (downloaded at book creation, so the app works without
+  hyphens; normalised to ISBN-13. Two sources queried in parallel, each within the same 5 s deadline
+  (D-56): Open Library (`/isbn/{isbn}.json` + authors + works for subjects; covers
+  `covers.openlibrary.org/b/isbn/{isbn}-L.jpg?default=false`) and Google Books
+  (`www.googleapis.com/books/v1/volumes?q=isbn:{isbn13}`, no API key; the volume carrying the ISBN).
+  Merge field by field: Open Library values win when present, Google Books fills the missing title,
+  authors, publisher, year, pages, genres (categories split on `/`, "General" dropped). Description:
+  HTML stripped, the longest of both, capped at 10 000 characters. Cover: Open Library, else the largest
+  Google Books `imageLinks` image (forced to https, `zoom=1`, no `edge=curl`).
+  Genres = up to 5 readable subjects (catalogue tags such as `nyt:…` or "Accessible book" dropped);
+  missing authors or work do not fail the lookup. `404 not_found` only when both sources do not know
+  the ISBN; `502 upstream_unavailable` when neither found it and at least one failed.
+- `GET /api/covers/:file` → the cover image (downloaded at book creation from an allowed source —
+  `https://` on `covers.openlibrary.org`, `books.google.com` or `books.googleusercontent.com`, see
+  `COVER_SOURCE_HOSTS` — so the app works without
   Internet; JPEG/PNG/WebP/GIF checked by content, 5 MB max, 5 s timeout; a failed download leaves the
   book without cover). `Cache-Control: no-cache` + `ETag` (a cover can be replaced). The `coverUrl` fields are server-relative (`/api/covers/<id>.jpg`) or null.
 
 ```
 BookInput     = { isbn13?: string|null, title, authors: string[], genres?: string[], publisher?, year?, pages?,
-                  description?, coverSourceUrl?: string|null /* https://covers.openlibrary.org only */ }
+                  description?, coverSourceUrl?: string|null /* https, COVER_SOURCE_HOSTS only */ }
 BookCandidate = BookInput & { isbn13: string, coverSourceUrl: string|null }
 BookSummary   = { id, isbn13, title, authors, coverUrl, addedAt, availability: Availability, readByMe: boolean }
 Availability  = { state: "available" } | { state: "reading", by: { id, name, color } } | { state: "lent", borrower, since }

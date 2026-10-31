@@ -52,12 +52,34 @@ export const isbnSchema = z.string().transform((value, ctx) => {
   return isbn;
 });
 
-export const COVER_SOURCE_PREFIX = 'https://covers.openlibrary.org/';
+/** Hosts a cover may be downloaded from (Open Library, Google Books), over https only. */
+export const COVER_SOURCE_HOSTS = [
+  'covers.openlibrary.org',
+  'books.google.com',
+  'books.googleusercontent.com',
+] as const;
+
+/** True for an `https://` URL on one of `COVER_SOURCE_HOSTS` (default port, no credentials). */
+export function isCoverSourceUrl(value: string): boolean {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    return false;
+  }
+  return (
+    url.protocol === 'https:' &&
+    url.port === '' &&
+    url.username === '' &&
+    url.password === '' &&
+    (COVER_SOURCE_HOSTS as readonly string[]).includes(url.hostname)
+  );
+}
 
 export const coverSourceUrlSchema = z
   .string()
   .max(500)
-  .refine((value) => value.startsWith(COVER_SOURCE_PREFIX), 'cover_source_not_allowed');
+  .refine(isCoverSourceUrl, 'cover_source_not_allowed');
 
 const bookFields = {
   isbn13: isbnSchema.nullable().optional(),

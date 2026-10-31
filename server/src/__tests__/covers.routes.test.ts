@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import type { BookDetail } from '@etagere/shared';
 
 import { type TestApp, buildTestApp } from './support/test-app';
-import { DUNE_ISBN, JPEG, duneRoutes, fakeOpenLibrary } from './support/open-library';
+import { DUNE_ISBN, GOOGLE_COVER, JPEG, duneRoutes, fakeOpenLibrary } from './support/open-library';
 
 const COVER = `https://covers.openlibrary.org/b/isbn/${DUNE_ISBN}-L.jpg?default=false`;
 const OTHER_COVER = 'https://covers.openlibrary.org/b/id/42-L.jpg';
@@ -58,6 +58,22 @@ describe('local covers', () => {
       headers: { 'if-none-match': String(served.headers.etag) },
     });
     expect(again.statusCode).toBe(304);
+  });
+
+  it('downloads a Google Books cover', async () => {
+    setup({ [GOOGLE_COVER]: new Response(PNG, { status: 200 }) });
+    const book = await createBook(GOOGLE_COVER);
+    expect(book.coverUrl).toBe(`/api/covers/${book.id}.jpg`);
+    expect(readFileSync(coverFile(book))).toEqual(Buffer.from(PNG));
+  });
+
+  it.each([
+    ['another host', 'https://evil.example/cover.jpg'],
+    ['plain http', 'http://books.google.com/books/content?id=X&zoom=1'],
+    ['a look-alike host', 'https://books.google.com.evil.example/x.jpg'],
+  ])('never downloads a cover from %s, even called directly', async (_label, url) => {
+    setup({ [url]: new Response(JPEG, { status: 200 }) });
+    expect(await t.app.covers.download('11111111-1111-4111-8111-111111111111', url)).toBeNull();
   });
 
   it('creates the book without a cover when the download fails or is not an image', async () => {

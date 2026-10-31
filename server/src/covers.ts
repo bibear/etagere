@@ -1,7 +1,7 @@
 import { mkdir, rename, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { COVER_SOURCE_PREFIX } from '@etagere/shared';
+import { isCoverSourceUrl } from '@etagere/shared';
 import type { FastifyBaseLogger } from 'fastify';
 
 /** Cover file names are `<bookId>.jpg` (book ids are UUIDs): nothing else is ever served. */
@@ -43,11 +43,12 @@ export class CoverStore {
   }
 
   /**
-   * Downloads the cover of a book (Open Library only) and returns its file name, or null when
+   * Downloads the cover of a book (Open Library or Google Books, https only: `isCoverSourceUrl`)
+   * and returns its file name, or null when
    * there is none or it could not be downloaded: the app then draws a generated cover.
    */
   async download(bookId: string, sourceUrl: string | null): Promise<string | null> {
-    if (sourceUrl === null || !sourceUrl.startsWith(COVER_SOURCE_PREFIX)) return null;
+    if (sourceUrl === null || !isCoverSourceUrl(sourceUrl)) return null;
     const file = `${bookId}.jpg`;
     const path = this.pathOf(file);
     if (path === null) return null;

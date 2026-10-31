@@ -47,7 +47,7 @@ IT STAYS AT HOME
 Étagère runs on a small free server on a computer of your house (Docker or Node.js, a few
 minutes to install, instructions on GitHub). Phones talk to it over the home Wi-Fi only. No
 account, no password, no cloud, no ads, no tracking. The only requests that leave your home are
-the book lookups on Open Library.
+the book lookups on Open Library and Google Books (only the ISBN is sent).
 
 FREE AND OPEN SOURCE
 Étagère is free software (AGPL-3.0). The code, the server and the documentation are on

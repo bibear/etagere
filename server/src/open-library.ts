@@ -19,14 +19,14 @@ export interface OpenLibraryDeps {
   timeoutMs?: number;
 }
 
-class Unavailable extends Error {}
+export class Unavailable extends Error {}
 
-type Json = Record<string, unknown>;
+export type Json = Record<string, unknown>;
 
-const isObject = (value: unknown): value is Json =>
+export const isObject = (value: unknown): value is Json =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
-const str = (value: unknown): string | null =>
+export const str = (value: unknown): string | null =>
   typeof value === 'string' && value.trim() !== '' ? value.trim() : null;
 
 const textOf = (value: unknown): string | null =>
@@ -60,12 +60,12 @@ export function genresFrom(subjects: unknown): string[] {
   return genres;
 }
 
-const yearOf = (publishDate: unknown): number | null => {
+export const yearOf = (publishDate: unknown): number | null => {
   const match = typeof publishDate === 'string' ? /\b(\d{4})\b/.exec(publishDate) : null;
   return match ? Number(match[1]) : null;
 };
 
-const pagesOf = (value: unknown): number | null =>
+export const pagesOf = (value: unknown): number | null =>
   typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 100_000
     ? value
     : null;

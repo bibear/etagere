@@ -51,3 +51,42 @@ export const duneRoutes = (): Record<string, FakeRoute> => ({
     headers: { 'content-type': 'image/jpeg' },
   }),
 });
+
+export const googleBooksUrl = (isbn13: string) =>
+  `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn13}`;
+
+export const GOOGLE_COVER =
+  'https://books.google.com/books/content?id=B1hSG45JCX4C&printsec=frontcover&img=1&zoom=1&source=gbs_api';
+
+/** A Google Books answer for one volume (`volumeInfo` fields override the defaults). */
+export const googleVolume = (isbn13: string, volumeInfo: Record<string, unknown> = {}) => ({
+  kind: 'books#volumes',
+  totalItems: 1,
+  items: [
+    {
+      kind: 'books#volume',
+      id: 'B1hSG45JCX4C',
+      volumeInfo: {
+        title: 'Dune',
+        authors: ['Frank Herbert'],
+        publisher: 'Pocket',
+        publishedDate: '2021-03-04',
+        description: '<p>Sur <b>Arrakis</b>, la planète des sables.</p><p>Paul Atréides…</p>',
+        industryIdentifiers: [{ type: 'ISBN_13', identifier: isbn13 }],
+        pageCount: 928,
+        categories: ['Fiction / Science Fiction / General'],
+        imageLinks: {
+          smallThumbnail:
+            'http://books.google.com/books/content?id=B1hSG45JCX4C&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api',
+          thumbnail:
+            'http://books.google.com/books/content?id=B1hSG45JCX4C&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api',
+        },
+        language: 'fr',
+        ...volumeInfo,
+      },
+    },
+  ],
+});
+
+/** Google Books knows nothing (its real answer: 200 with no items). */
+export const googleNothing = { kind: 'books#volumes', totalItems: 0 };

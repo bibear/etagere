@@ -5,8 +5,8 @@ stays at home. It runs on any computer of the house (a laptop, a Raspberry Pi, a
 phone of the household connects to it over the home Wi-Fi: with the Étagère app, or simply by
 opening its address in a browser (the web app is included).
 
-No account, no cloud: the only outbound calls are the ISBN lookups and the reading ideas
-(Open Library). The server refuses any client outside the home network.
+No account, no cloud: the only outbound calls are the ISBN lookups (Open Library and Google
+Books, only the ISBN is sent) and the reading ideas (Open Library). The server refuses any client outside the home network.
 
 ## Run it
 

@@ -1,5 +1,13 @@
 import { type TestApp, buildTestApp } from './support/test-app';
-import { DUNE_ISBN, duneRoutes, fakeOpenLibrary } from './support/open-library';
+import {
+  DUNE_ISBN,
+  GOOGLE_COVER,
+  duneRoutes,
+  fakeOpenLibrary,
+  googleBooksUrl,
+  googleNothing,
+  googleVolume,
+} from './support/open-library';
 
 describe('GET /api/lookup/:isbn', () => {
   let t: TestApp;
@@ -56,17 +64,48 @@ describe('GET /api/lookup/:isbn', () => {
     expect(ol.requests).toEqual([]);
   });
 
-  it('answers 404 not_found when Open Library does not know the ISBN', async () => {
-    t = buildTestApp({ fetch: fakeOpenLibrary({}).fetch });
+  it('answers 404 not_found when neither Open Library nor Google Books knows the ISBN', async () => {
+    t = buildTestApp({
+      fetch: fakeOpenLibrary({ [googleBooksUrl(DUNE_ISBN)]: googleNothing }).fetch,
+    });
     const response = await lookup(DUNE_ISBN);
     expect(response.statusCode).toBe(404);
     expect(response.json()).toEqual({ code: 'not_found' });
   });
 
-  it('answers 502 upstream_unavailable when Open Library fails', async () => {
+  it('answers the Google Books candidate when Open Library fails', async () => {
     t = buildTestApp({
       fetch: fakeOpenLibrary({
         [`https://openlibrary.org/isbn/${DUNE_ISBN}.json`]: new Error('offline'),
+        [googleBooksUrl(DUNE_ISBN)]: googleVolume(DUNE_ISBN),
+      }).fetch,
+    });
+    const response = await lookup(DUNE_ISBN);
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({
+      title: 'Dune',
+      description: 'Sur Arrakis, la planète des sables.\n\nPaul Atréides…',
+      coverSourceUrl: GOOGLE_COVER,
+    });
+  });
+
+  it('answers the Open Library candidate when Google Books fails', async () => {
+    t = buildTestApp({
+      fetch: fakeOpenLibrary({
+        ...duneRoutes(),
+        [googleBooksUrl(DUNE_ISBN)]: new Response('quota', { status: 429 }),
+      }).fetch,
+    });
+    const response = await lookup(DUNE_ISBN);
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({ title: 'Dune', publisher: 'Pocket' });
+  });
+
+  it('answers 502 upstream_unavailable when both sources fail', async () => {
+    t = buildTestApp({
+      fetch: fakeOpenLibrary({
+        [`https://openlibrary.org/isbn/${DUNE_ISBN}.json`]: new Error('offline'),
+        [googleBooksUrl(DUNE_ISBN)]: new Error('offline'),
       }).fetch,
     });
     const response = await lookup(DUNE_ISBN);

@@ -33,7 +33,7 @@ export interface BookInput {
   year?: number | null;
   pages?: number | null;
   description?: string | null;
-  /** https://covers.openlibrary.org only; downloaded by the server at creation. */
+  /** Open Library or Google Books image (`COVER_SOURCE_HOSTS`, https); downloaded by the server. */
   coverSourceUrl?: string | null;
 }
 

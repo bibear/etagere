@@ -4,6 +4,7 @@ import {
   bookPatchSchema,
   booksQuerySchema,
   commentInputSchema,
+  isCoverSourceUrl,
   loanInputSchema,
   profileInputSchema,
   uuidSchema,
@@ -57,6 +58,13 @@ describe('bookInputSchema', () => {
     ['non-integer year', { ...book, year: 1965.5 }],
     ['zero pages', { ...book, pages: 0 }],
     ['cover from another host', { ...book, coverSourceUrl: 'https://evil.example/x.jpg' }],
+    ['cover over http', { ...book, coverSourceUrl: 'http://books.google.com/books/content?id=x' }],
+    [
+      'cover on a look-alike host',
+      { ...book, coverSourceUrl: 'https://books.google.com.evil.example/x.jpg' },
+    ],
+    ['cover with credentials', { ...book, coverSourceUrl: 'https://a@covers.openlibrary.org/x' }],
+    ['cover that is not a URL', { ...book, coverSourceUrl: 'covers.openlibrary.org/x.jpg' }],
     ['unknown key', { ...book, id: 'x' }],
   ])('rejects %s', (_label, input) => {
     expect(bookInputSchema.safeParse(input).success).toBe(false);
@@ -69,6 +77,27 @@ describe('bookInputSchema', () => {
       coverSourceUrl: 'https://covers.openlibrary.org/b/isbn/9782070612758-L.jpg',
     };
     expect(bookInputSchema.safeParse(input).success).toBe(true);
+  });
+});
+
+describe('isCoverSourceUrl', () => {
+  it.each([
+    'https://covers.openlibrary.org/b/isbn/9782070612758-L.jpg?default=false',
+    'https://books.google.com/books/content?id=abc&printsec=frontcover&img=1&zoom=1',
+    'https://books.googleusercontent.com/books/content?id=abc',
+  ])('accepts %s', (url) => {
+    expect(isCoverSourceUrl(url)).toBe(true);
+    expect(bookInputSchema.safeParse({ ...book, coverSourceUrl: url }).success).toBe(true);
+  });
+
+  it.each([
+    'http://covers.openlibrary.org/b/id/1-L.jpg',
+    'https://books.google.com:8443/books/content?id=abc',
+    'https://evilbooks.google.com/x',
+    'https://google.com/x',
+    'javascript:alert(1)',
+  ])('rejects %s', (url) => {
+    expect(isCoverSourceUrl(url)).toBe(false);
   });
 });
 
