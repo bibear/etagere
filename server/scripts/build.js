@@ -7,7 +7,7 @@
 // Usage: node scripts/build.js [--pwa] [--outfile <path>]
 const { execFileSync } = require('node:child_process');
 const { cpSync, existsSync, readFileSync, rmSync } = require('node:fs');
-const { basename, join, resolve } = require('node:path');
+const { join, resolve } = require('node:path');
 
 const serverDir = resolve(__dirname, '..');
 const repoDir = resolve(serverDir, '..');
@@ -37,7 +37,10 @@ async function buildServer(outfile = join(serverDir, 'dist', 'index.js')) {
   return outfile;
 }
 
-/** Exports the Expo web app and copies it to public/ (macOS `._*` files left out). */
+/**
+ * Exports the Expo web app, completes it as a PWA (manifest, icons, service worker: see
+ * src/pwa/build.ts) and copies it to public/ (dotfiles and macOS `._*` files left out).
+ */
 function buildPwa() {
   const windows = process.platform === 'win32';
   execFileSync(windows ? 'npm.cmd' : 'npm', ['run', 'export:web'], {
@@ -49,8 +52,11 @@ function buildPwa() {
   const source = join(appDir, 'dist');
   if (!existsSync(join(source, 'index.html'))) throw new Error('The web export has no index.html');
   const target = join(serverDir, 'public');
-  rmSync(target, { recursive: true, force: true });
-  cpSync(source, target, { recursive: true, filter: (path) => !basename(path).startsWith('._') });
+  execFileSync(
+    process.execPath,
+    [require.resolve('tsx/cli'), join(serverDir, 'src', 'pwa', 'build-cli.ts'), source, target],
+    { stdio: ['ignore', 2, 2] },
+  );
 }
 
 function copyLicense() {

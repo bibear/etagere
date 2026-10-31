@@ -25,7 +25,8 @@
     "test": "node --experimental-vm-modules --no-warnings=ExperimentalWarning node_modules/jest/bin/jest.js",
     "server": "npm run dev -w etagere-server",
     "app": "npm run start -w @etagere/app",
-    "web": "npm run web -w @etagere/app"
+    "web": "npm run web -w @etagere/app",
+    "build:web": "npm run export:web -w @etagere/app && tsx server/src/pwa/build-cli.ts app/dist server/public"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

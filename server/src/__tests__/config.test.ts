@@ -10,7 +10,12 @@ describe('loadConfig', () => {
       householdName: 'Étagère',
       logLevel: 'info',
       mdns: true,
+      publicDir: null,
     });
+  });
+
+  it('reads ETAGERE_PUBLIC_DIR against the working directory', () => {
+    expect(loadConfig({ ETAGERE_PUBLIC_DIR: 'web' }, '/srv').publicDir).toBe('/srv/web');
   });
 
   it('reads PORT, HOST, ETAGERE_DATA_DIR and ETAGERE_HOUSEHOLD_NAME', () => {

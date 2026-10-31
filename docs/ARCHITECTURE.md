@@ -223,6 +223,21 @@ The server serves the exported web app (`app/dist`, copied into the published se
 `server/public`) at `/`, with SPA fallback to `index.html` for non-`/api` paths, a web manifest and a
 service worker caching the shell. Opening `http://<server>:4848` on a phone gives the full app.
 
+- Build: `npm run build:web` (root) runs `expo export -p web`, then `server/src/pwa/build-cli.ts`
+  completes `app/dist` (icons drawn in code at 180/192/512 px + SVG, `manifest.webmanifest`, `sw.js`,
+  manifest / iOS home-screen tags and the service worker registration injected into `index.html`) and
+  replaces `server/public` with it (git-ignored). `ETAGERE_PUBLIC_DIR` points the server elsewhere; without
+  an `index.html` there, the server is API only.
+- Serving (`@fastify/static`, behind the LAN guard): `/_expo/static/**` (hashed) `Cache-Control: public,
+  max-age=31536000, immutable`, everything else `no-cache`. Unknown GET/HEAD paths outside `/api` and
+  without a file extension answer `index.html`; unknown `/api` paths and missing files stay `404 not_found`.
+  Dotfiles and `._*` files are never served.
+- Service worker (`/sw.js`, cache `etagere-shell-<content hash>`): precaches `/`, the manifest, the
+  bundles and the icons; navigations are network first with the cached shell offline; other same-origin
+  GETs cache first (fonts, images cached on first use); `/api` and other origins are never intercepted.
+  Browsers only run service workers in a secure context (https or `localhost`): over plain-HTTP LAN the
+  app still installs to the home screen from the manifest, and offline data comes from the app's own cache.
+
 ## Server discovery and pairing
 
 - Default port `4848` (`PORT` env). On start the server prints (plain stdout, not the JSON log) its
@@ -263,7 +278,7 @@ entry (no barcode) is the add/edit form.
   `prepack` = `server/scripts/build.js --pwa`: esbuild bundles `server/src/index.ts` and
   `@etagere/shared` into one CommonJS file `dist/index.js` (the bin, with a node shebang; npm
   dependencies stay external, so `@etagere/shared` is a dev dependency of the server), exports the web
-  app (`app/dist`) into `server/public` and copies the root `LICENSE`. Published files:
+  app (`app/dist`), completes it as a PWA (`server/src/pwa/build-cli.ts`, see § PWA) into `server/public` and copies the root `LICENSE`. Published files:
   `dist/index.js`, `public/`, `LICENSE`, `README.md` (`server/README.md` is the npm page).
   `npm run smoke:pack -w etagere-server` packs, installs the tarball in an empty project, starts the
   bin and checks `/api/health` and `/` (needs the npm registry, not part of `npm run check`).

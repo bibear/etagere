@@ -20,3 +20,10 @@ npm run check      # lint + typecheck + all tests: the quality gate, run before 
 
 Workspaces: `packages/shared` (types, validation, i18n, tokens), `server` (Fastify API),
 `app` (Expo app, iOS / Android / PWA).
+
+To try the PWA served by the home server:
+
+```sh
+npm run build:web  # exports the web app into server/public
+npm run server     # then open http://<this computer>:4848 on a phone of the household
+```

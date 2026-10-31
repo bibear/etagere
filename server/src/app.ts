@@ -1,4 +1,5 @@
 import cors from '@fastify/cors';
+import fastifyStatic from '@fastify/static';
 import websocket from '@fastify/websocket';
 import Fastify, { type FastifyBaseLogger, type FastifyInstance } from 'fastify';
 
@@ -6,6 +7,7 @@ import { CoverStore } from './covers';
 import type { Database } from './db/database';
 import { installErrorHandling } from './http/errors';
 import { isLocalAddress, isLocalOrigin } from './lan-only';
+import { hasPwa, pwaFallback, pwaStaticOptions } from './pwa/serve';
 import { EventBus } from './realtime/events';
 import { apiRoutes } from './routes';
 import { SERVER_VERSION } from './version';
@@ -29,6 +31,8 @@ export interface BuildAppOptions extends Omit<AppDeps, 'version' | 'householdNam
   version?: string;
   householdName?: string;
   lanUrls?: () => string[];
+  /** The exported web app served at `/` (null or a directory without index.html: API only). */
+  publicDir?: string | null;
   /** false (default, tests), true (pino to stdout), or a logger instance. */
   logger?: boolean | FastifyBaseLogger;
   logLevel?: string;
@@ -51,7 +55,7 @@ const serializers = {
 };
 
 export function buildApp(options: BuildAppOptions): FastifyInstance {
-  const { logger = false, logLevel = 'info', ...rest } = options;
+  const { logger = false, logLevel = 'info', publicDir = null, ...rest } = options;
   const deps: AppDeps = {
     version: SERVER_VERSION,
     householdName: 'Étagère',
@@ -69,7 +73,8 @@ export function buildApp(options: BuildAppOptions): FastifyInstance {
     'covers',
     new CoverStore({ dataDir: deps.dataDir, fetch: deps.fetch, log: app.log }),
   );
-  installErrorHandling(app);
+  const pwa = hasPwa(publicDir);
+  installErrorHandling(app, pwa ? pwaFallback : undefined);
 
   // Only the home network may talk to the server (D-03).
   app.addHook('onRequest', async (request, reply) => {
@@ -85,5 +90,7 @@ export function buildApp(options: BuildAppOptions): FastifyInstance {
   // WebSocket support at the root (realtime events, `app.injectWS` in tests).
   app.register(websocket, { options: { maxPayload: 1024 } });
   app.register(apiRoutes, { prefix: '/api' });
+  // The PWA at `/` (docs/ARCHITECTURE.md § PWA), behind the same LAN guard.
+  if (pwa) app.register(fastifyStatic, pwaStaticOptions(publicDir));
   return app;
 }

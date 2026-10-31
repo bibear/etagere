@@ -1,4 +1,4 @@
-import type { FastifyError, FastifyInstance } from 'fastify';
+import type { FastifyError, FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { ZodError } from 'zod';
 
 /** An expected HTTP error: answered as `{ code, ...details }` with its status. */
@@ -13,8 +13,14 @@ export class HttpError extends Error {
   }
 }
 
-/** Installs the error format of the contract: `{ code }`, never internals. */
-export function installErrorHandling(app: FastifyInstance): void {
+/**
+ * Installs the error format of the contract: `{ code }`, never internals.
+ * `notFoundFallback` may answer an unknown route itself (the PWA's SPA fallback) by returning true.
+ */
+export function installErrorHandling(
+  app: FastifyInstance,
+  notFoundFallback?: (request: FastifyRequest, reply: FastifyReply) => boolean,
+): void {
   app.setErrorHandler((error: FastifyError | HttpError | ZodError, request, reply) => {
     if (error instanceof HttpError) {
       return reply.code(error.statusCode).send({ ...error.details, code: error.code });
@@ -33,5 +39,8 @@ export function installErrorHandling(app: FastifyInstance): void {
     return reply.code(500).send({ code: 'internal_error' });
   });
 
-  app.setNotFoundHandler((_request, reply) => reply.code(404).send({ code: 'not_found' }));
+  app.setNotFoundHandler((request, reply) => {
+    if (notFoundFallback?.(request, reply)) return reply;
+    return reply.code(404).send({ code: 'not_found' });
+  });
 }

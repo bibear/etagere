@@ -5,6 +5,7 @@ import { loadConfig } from './config';
 import { DATABASE_FILE, openDatabase } from './db/database';
 import { announce, pairingBanner } from './discovery';
 import { lanUrls } from './network';
+import { hasPwa } from './pwa/serve';
 
 // Entry point: `npm run server` (dev, tsx watch) or the published `etagere-server` bin.
 async function main(): Promise<void> {
@@ -13,6 +14,8 @@ async function main(): Promise<void> {
   const loopbackOnly = ['127.0.0.1', '::1', 'localhost'].includes(config.host);
   const addresses = () => (loopbackOnly ? [] : lanUrls(config.port));
   const db = openDatabase(join(config.dataDir, DATABASE_FILE));
+  // The web app exported by `npm run build:web` lands in the package's `public/`.
+  const publicDir = config.publicDir ?? join(__dirname, '..', 'public');
   const app = buildApp({
     db,
     dataDir: config.dataDir,
@@ -22,6 +25,7 @@ async function main(): Promise<void> {
     lanUrls: addresses,
     logger: true,
     logLevel: config.logLevel,
+    publicDir,
   });
 
   let withdraw: () => Promise<void> = async () => {};
@@ -43,6 +47,9 @@ async function main(): Promise<void> {
       householdName: config.householdName,
       log: app.log,
     });
+  }
+  if (!hasPwa(publicDir)) {
+    app.log.warn(`No web app in ${publicDir}: API only (run \`npm run build:web\` first)`);
   }
   // Plain stdout, not the JSON logger: the QR code must reach the terminal as drawn.
   process.stdout.write(
