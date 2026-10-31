@@ -14,3 +14,8 @@ app/web-build/
 app/ios/
 app/android/
 *.tsbuildinfo
+
+# npm package build output
+server/LICENSE
+server/dist-test-*/
+*.tgz

@@ -9,6 +9,9 @@ import { lanUrls } from './network';
 // Entry point: `npm run server` (dev, tsx watch) or the published `etagere-server` bin.
 async function main(): Promise<void> {
   const config = loadConfig();
+  // Bound to loopback only (HOST=127.0.0.1): the LAN addresses would not answer.
+  const loopbackOnly = ['127.0.0.1', '::1', 'localhost'].includes(config.host);
+  const addresses = () => (loopbackOnly ? [] : lanUrls(config.port));
   const db = openDatabase(join(config.dataDir, DATABASE_FILE));
   const app = buildApp({
     db,
@@ -16,7 +19,7 @@ async function main(): Promise<void> {
     fetch: globalThis.fetch,
     now: () => new Date(),
     householdName: config.householdName,
-    lanUrls: () => lanUrls(config.port),
+    lanUrls: addresses,
     logger: true,
     logLevel: config.logLevel,
   });
@@ -33,7 +36,7 @@ async function main(): Promise<void> {
 
   await app.listen({ port: config.port, host: config.host });
   app.log.info(`Étagère is ready. Data: ${config.dataDir}`);
-  if (config.mdns) {
+  if (config.mdns && !loopbackOnly) {
     withdraw = announce({
       port: config.port,
       version: app.deps.version,
@@ -42,7 +45,9 @@ async function main(): Promise<void> {
     });
   }
   // Plain stdout, not the JSON logger: the QR code must reach the terminal as drawn.
-  process.stdout.write(`${await pairingBanner(lanUrls(config.port), config.port, config.mdns)}\n`);
+  process.stdout.write(
+    `${await pairingBanner(addresses(), config.port, config.mdns && !loopbackOnly)}\n`,
+  );
 }
 
 main().catch((error: unknown) => {

@@ -259,7 +259,14 @@ entry (no barcode) is the add/edit form.
 - **Docker**: multi-stage image (`node:24-alpine`), volume `/data`, port 4848, `docker compose up -d`.
   `network_mode: host` documented for mDNS. Built and pushed to `ghcr.io/bibear/etagere` by the
   maintainer from his machine (`npm run release:docker`).
-- **npm**: `npx etagere-server` (package `etagere-server`, includes the built PWA).
+- **npm**: `npx etagere-server` (package `etagere-server`, includes the built PWA). `npm pack` runs
+  `prepack` = `server/scripts/build.js --pwa`: esbuild bundles `server/src/index.ts` and
+  `@etagere/shared` into one CommonJS file `dist/index.js` (the bin, with a node shebang; npm
+  dependencies stay external, so `@etagere/shared` is a dev dependency of the server), exports the web
+  app (`app/dist`) into `server/public` and copies the root `LICENSE`. Published files:
+  `dist/index.js`, `public/`, `LICENSE`, `README.md` (`server/README.md` is the npm page).
+  `npm run smoke:pack -w etagere-server` packs, installs the tarball in an empty project, starts the
+  bin and checks `/api/health` and `/` (needs the npm registry, not part of `npm run check`).
 - **Android**: APK attached to GitHub Releases, built with EAS (`eas build -p android --profile preview`).
 - **iOS**: PWA ("Add to Home Screen") until store accounts exist. `eas.json`, app icons, splash and
   store listing texts (`docs/store/`) are ready for later submission.

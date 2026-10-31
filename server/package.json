@@ -1,18 +1,48 @@
 {
   "name": "etagere-server",
   "version": "0.1.0",
-  "private": true,
-  "description": "Étagère home server: household book library API over the home Wi-Fi.",
+  "description": "Étagère home server: a household book library for the home Wi-Fi. Serves the API and the web app.",
+  "keywords": [
+    "books",
+    "library",
+    "household",
+    "self-hosted",
+    "home-server",
+    "lan",
+    "isbn"
+  ],
+  "homepage": "https://github.com/bibear/etagere#readme",
+  "bugs": {
+    "url": "https://github.com/bibear/etagere/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bibear/etagere.git",
+    "directory": "server"
+  },
   "license": "AGPL-3.0-only",
-  "main": "src/app.ts",
-  "types": "src/app.ts",
+  "bin": {
+    "etagere-server": "dist/index.js"
+  },
+  "files": [
+    "dist/index.js",
+    "public",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "start": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "build": "node scripts/build.js",
+    "build:package": "node scripts/build.js --pwa",
+    "prepack": "node scripts/build.js --pwa",
+    "smoke:pack": "node scripts/smoke-pack.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@etagere/shared": "*",
     "@fastify/cors": "^11.3.1",
     "@fastify/websocket": "11.3.4",
     "bonjour-service": "^1.4.4",
@@ -21,8 +51,10 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@etagere/shared": "*",
     "@types/qrcode": "^1.5.6",
     "@types/ws": "^8.18.2",
+    "esbuild": "^0.28.2",
     "pino": "^10.4.0",
     "tsx": "^4.23.15"
   }
