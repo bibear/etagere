@@ -1,6 +1,7 @@
 import cors from '@fastify/cors';
 import Fastify, { type FastifyBaseLogger, type FastifyInstance } from 'fastify';
 
+import { CoverStore } from './covers';
 import type { Database } from './db/database';
 import { installErrorHandling } from './http/errors';
 import { isLocalAddress, isLocalOrigin } from './lan-only';
@@ -37,6 +38,8 @@ declare module 'fastify' {
     deps: AppDeps;
     /** Realtime events published after mutations (`app.events.publish(...)`). */
     events: EventBus;
+    /** Local book covers (`<dataDir>/covers`). */
+    covers: CoverStore;
   }
 }
 
@@ -61,6 +64,10 @@ export function buildApp(options: BuildAppOptions): FastifyInstance {
 
   app.decorate('deps', deps);
   app.decorate('events', new EventBus());
+  app.decorate(
+    'covers',
+    new CoverStore({ dataDir: deps.dataDir, fetch: deps.fetch, log: app.log }),
+  );
   installErrorHandling(app);
 
   // Only the home network may talk to the server (D-03).

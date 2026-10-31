@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 
+import { bookRoutes } from './books';
 import { profileRoutes } from './profiles';
 import { serverRoutes } from './server';
 
@@ -7,4 +8,5 @@ import { serverRoutes } from './server';
 export async function apiRoutes(app: FastifyInstance): Promise<void> {
   await app.register(serverRoutes);
   await app.register(profileRoutes);
+  await app.register(bookRoutes);
 }

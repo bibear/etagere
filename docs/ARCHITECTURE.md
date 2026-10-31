@@ -142,8 +142,11 @@ the app with `buildTestApp()` (`server/src/__tests__/support/test-app.ts`): in-m
   `{ books: BookSummary[], counts: { all, available, reading, lent, unreadByMe } }`.
   `query` matches title, authors, ISBN (case and accent insensitive).
 - `GET /api/books/:id` → `BookDetail`
-- `POST /api/books` body `BookInput` → `201 BookDetail`; duplicate ISBN → `409 { code: "already_in_library", book: BookSummary }`
-- `PATCH /api/books/:id` body partial `BookInput` → `BookDetail`
+  Counts cover the books matching `query` (whatever the filter). Sorts: `added` newest first, `title` / `author`
+  (first author) alphabetical, ignoring case and accents. Without a profile header `readByMe` is false.
+- `POST /api/books` body `BookInput` → `201 BookDetail`; duplicate ISBN → `409 { code: "already_in_library", book: BookSummary }`.
+  `source` is `lookup` when the book has an ISBN, `manual` otherwise.
+- `PATCH /api/books/:id` body partial `BookInput` → `BookDetail` (`coverSourceUrl`: a URL replaces the cover, `null` removes it)
 - `DELETE /api/books/:id` → `204`
 - `GET /api/lookup/:isbn` → `200 BookCandidate` | `400 invalid_isbn` | `404 not_found` |
   `409 already_in_library` | `502 upstream_unavailable`. Accepts ISBN-10 or ISBN-13 with or without
