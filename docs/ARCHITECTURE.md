@@ -151,9 +151,12 @@ the app with `buildTestApp()` (`server/src/__tests__/support/test-app.ts`): in-m
 - `GET /api/lookup/:isbn` → `200 BookCandidate` | `400 invalid_isbn` | `404 not_found` |
   `409 already_in_library` | `502 upstream_unavailable`. Accepts ISBN-10 or ISBN-13 with or without
   hyphens; normalised to ISBN-13. Source: Open Library (`/isbn/{isbn}.json` + authors + works for
-  subjects; covers `covers.openlibrary.org/b/isbn/{isbn}-L.jpg?default=false`). 5 s timeout.
+  subjects; covers `covers.openlibrary.org/b/isbn/{isbn}-L.jpg?default=false`). 5 s timeout for the whole lookup.
+  Genres = up to 5 readable work subjects (catalogue tags such as `nyt:…` or "Accessible book" dropped);
+  missing authors or work do not fail the lookup.
 - `GET /api/covers/:file` → the cover image (downloaded at book creation, so the app works without
-  Internet). The `coverUrl` fields are server-relative (`/api/covers/<id>.jpg`) or null.
+  Internet; JPEG/PNG/WebP/GIF checked by content, 5 MB max, 5 s timeout; a failed download leaves the
+  book without cover). `Cache-Control: no-cache` + `ETag` (a cover can be replaced). The `coverUrl` fields are server-relative (`/api/covers/<id>.jpg`) or null.
 
 ```
 BookInput     = { isbn13?: string|null, title, authors: string[], genres?: string[], publisher?, year?, pages?,
