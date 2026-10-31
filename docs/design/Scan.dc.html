@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Scanner un livre</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1F6B4A}a:hover{color:#154D35}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0F1513; font-family: Inter, system-ui, sans-serif; color: #FFFFFF; display: flex; flex-direction: column; overflow: hidden">
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 40px 16px 0">
+<a href="Main.dc.html" aria-label="Fermer le scanner" style="width: 44px; height: 44px; border-radius: 22px; background: #26302C; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
+<span style="font-size: 16px; font-weight: 600">Scanner un livre</span>
+<button aria-label="Allumer la lampe" style="width: 44px; height: 44px; border-radius: 22px; border: none; background: #26302C; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"></path></svg></button>
+</div>
+<div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 0 24px">
+<div style="position: relative; width: 290px; height: 180px; border-radius: 18px; background: #E9E6DD; display: flex; align-items: center; justify-content: center">
+<svg width="200" height="100" viewBox="0 0 200 100" role="img" aria-label="Code-barres ISBN au dos du livre"><g fill="#16201B"><rect x="0" y="0" width="4" height="84"></rect><rect x="7" y="0" width="2" height="84"></rect><rect x="12" y="0" width="6" height="76"></rect><rect x="21" y="0" width="2" height="76"></rect><rect x="26" y="0" width="4" height="76"></rect><rect x="34" y="0" width="2" height="76"></rect><rect x="39" y="0" width="6" height="76"></rect><rect x="48" y="0" width="2" height="76"></rect><rect x="53" y="0" width="4" height="76"></rect><rect x="61" y="0" width="6" height="76"></rect><rect x="70" y="0" width="2" height="76"></rect><rect x="75" y="0" width="4" height="76"></rect><rect x="83" y="0" width="2" height="76"></rect><rect x="88" y="0" width="4" height="76"></rect><rect x="96" y="0" width="2" height="84"></rect><rect x="101" y="0" width="2" height="84"></rect><rect x="107" y="0" width="6" height="76"></rect><rect x="116" y="0" width="2" height="76"></rect><rect x="121" y="0" width="4" height="76"></rect><rect x="129" y="0" width="2" height="76"></rect><rect x="134" y="0" width="6" height="76"></rect><rect x="143" y="0" width="4" height="76"></rect><rect x="151" y="0" width="2" height="76"></rect><rect x="156" y="0" width="6" height="76"></rect><rect x="165" y="0" width="2" height="76"></rect><rect x="170" y="0" width="4" height="76"></rect><rect x="178" y="0" width="2" height="76"></rect><rect x="183" y="0" width="6" height="76"></rect><rect x="192" y="0" width="2" height="84"></rect><rect x="197" y="0" width="3" height="84"></rect></g><text x="100" y="98" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#16201B">9 782352 940xxx</text></svg>
+<div style="position: absolute; left: 18px; right: 18px; top: 88px; height: 3px; border-radius: 2px; background: #3DDC84"></div>
+<div style="position: absolute; left: -10px; top: -10px; width: 36px; height: 36px; border-left: 4px solid #3DDC84; border-top: 4px solid #3DDC84; border-top-left-radius: 20px"></div>
+<div style="position: absolute; right: -10px; top: -10px; width: 36px; height: 36px; border-right: 4px solid #3DDC84; border-top: 4px solid #3DDC84; border-top-right-radius: 20px"></div>
+<div style="position: absolute; left: -10px; bottom: -10px; width: 36px; height: 36px; border-left: 4px solid #3DDC84; border-bottom: 4px solid #3DDC84; border-bottom-left-radius: 20px"></div>
+<div style="position: absolute; right: -10px; bottom: -10px; width: 36px; height: 36px; border-right: 4px solid #3DDC84; border-bottom: 4px solid #3DDC84; border-bottom-right-radius: 20px"></div>
+</div>
+<p style="margin: 0; font-size: 15px; line-height: 1.45; color: #C6CEC9; text-align: center">Vise le code-barres au dos du livre.<br>L'ajout se fait tout seul dès qu'il est lu.</p>
+</div>
+<div style="background: #FFFFFF; color: #16201B; border-radius: 24px 24px 0 0; padding: 12px 20px 30px; display: flex; flex-direction: column; gap: 16px">
+<div style="align-self: center; width: 40px; height: 4px; border-radius: 2px; background: #C9CFC9"></div>
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 10px; background: #DCEFE4; color: #155238">Livre trouvé</span>
+<span style="font-size: 12px; color: #5B6660">via Open Library</span>
+</div>
+<div style="display: flex; gap: 14px; align-items: center">
+<div style="width: 64px; height: 96px; flex: none; border-radius: 5px; background: #2F5D62; color: #FFFFFF; box-sizing: border-box; padding: 7px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 10px; font-weight: 700; line-height: 1.15">Le Nom du vent</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 700">Le Nom du vent</span>
+<span style="font-size: 14px">Patrick Rothfuss</span>
+<span style="font-size: 13px; color: #5B6660">Fantasy · Bragelonne · 2009</span>
+</div>
+</div>
+<a href="Main.dc.html" style="height: 54px; border-radius: 14px; background: #1F6B4A; color: #FFFFFF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 16px; font-weight: 600">Ajouter à la bibliothèque</a>
+<div style="display: flex; justify-content: space-between">
+<a href="#" style="font-size: 14px; font-weight: 500; padding: 8px 0">Scanner un autre</a>
+<a href="#" style="font-size: 14px; font-weight: 500; padding: 8px 0">Saisir l'ISBN à la main</a>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

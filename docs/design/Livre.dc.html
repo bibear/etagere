@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Fiche livre</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1F6B4A}a:hover{color:#154D35}
+</style>
+</helmet>
+<div style="width: 390px; height: 1180px; box-sizing: border-box; background: #F3F4F1; font-family: Inter, system-ui, sans-serif; color: #16201B; display: flex; flex-direction: column; padding: 40px 20px 32px; gap: 22px">
+<a href="Main.dc.html" style="align-self: flex-start; display: flex; align-items: center; gap: 6px; min-height: 44px; text-decoration: none; font-size: 15px; font-weight: 500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Bibliothèque</a>
+<div style="display: flex; gap: 18px; align-items: flex-end">
+<div style="width: 128px; height: 190px; flex: none; border-radius: 8px; background: #B5523B; color: #FFFFFF; box-sizing: border-box; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; font-family: 'Bricolage Grotesque', sans-serif"><span style="font-size: 22px; font-weight: 700">Dune</span><span style="font-size: 11px; opacity: 0.85">Frank Herbert</span></div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding-bottom: 4px">
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.5px">Dune</h1>
+<p style="margin: 0; font-size: 15px; color: #16201B">Frank Herbert</p>
+<p style="margin: 0; font-size: 13px; line-height: 1.45; color: #5B6660">Science-fiction · 1965<br>Pocket · 928 pages<br>Ajouté par Camille</p>
+</div>
+</div>
+<div style="{{statusBox}}">
+<span style="{{statusDot}}"></span>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 600">{{statusTitle}}</span>
+<span style="font-size: 13px; color: #5B6660">{{statusSub}}</span>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<button onClick="{{toggle}}" style="{{primaryStyle}}">{{primaryLabel}}</button>
+<button style="height: 48px; border-radius: 14px; border: 1px solid #C9CFC9; background: #FFFFFF; color: #16201B; font-family: Inter, sans-serif; font-size: 15px; font-weight: 500">Je l'ai déjà lu</button>
+</div>
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="font-size: 14px; color: #5B6660">Déjà lu par</span>
+<div style="display: flex">
+<span style="width: 32px; height: 32px; border-radius: 16px; background: #2C4A6B; color: #FFFFFF; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; border: 2px solid #F3F4F1">C</span>
+<span style="width: 32px; height: 32px; border-radius: 16px; background: #B5523B; color: #FFFFFF; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; border: 2px solid #F3F4F1; margin-left: -8px">J</span>
+</div>
+<span style="font-size: 14px; color: #16201B">Camille, Jules</span>
+</div>
+<div style="height: 1px; background: #DDE1DC"></div>
+<div style="display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 700">Avis du foyer · 3</h2>
+<sc-for list="{{comments}}" as="c" hint-placeholder-count="3">
+<div style="display: flex; gap: 12px; padding: 14px; background: #FFFFFF; border: 1px solid #DDE1DC; border-radius: 14px">
+<span style="{{c.avatarStyle}}">{{c.initial}}</span>
+<div style="display: flex; flex-direction: column; gap: 4px; flex: 1">
+<div style="display: flex; justify-content: space-between; gap: 8px"><span style="font-size: 14px; font-weight: 600">{{c.name}}</span><span style="font-size: 12px; color: #5B6660">{{c.date}}</span></div>
+<p style="margin: 0; font-size: 14px; line-height: 1.5">{{c.text}}</p>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; gap: 10px; align-items: center">
+<label style="flex: 1; display: flex; align-items: center; height: 50px; padding: 0 14px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #DDE1DC; border-radius: 25px">
+<input type="text" placeholder="Laisser un avis pour le foyer…" aria-label="Ton commentaire" style="flex: 1; border: none; background: transparent; outline: none; font-family: Inter, sans-serif; font-size: 15px; color: #16201B">
+</label>
+<button aria-label="Publier le commentaire" style="width: 50px; height: 50px; border-radius: 25px; border: none; background: #1F6B4A; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1180}}'>
+class Component extends DCLogic {
+renderVals() {
+var self = this;
+var reading = !!(this.state && this.state.reading);
+var av = function (bg) {
+return 'width: 36px; height: 36px; flex: none; border-radius: 18px; background: ' + bg + '; color: #FFFFFF; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center';
+};
+return {
+toggle: function () { self.setState({ reading: !reading }); },
+statusBox: 'display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 14px; ' + (reading ? 'background: #FCE9C2' : 'background: #DCEFE4'),
+statusDot: 'width: 10px; height: 10px; flex: none; border-radius: 5px; ' + (reading ? 'background: #B07400' : 'background: #2E9E64'),
+statusTitle: reading ? 'Tu le lis en ce moment' : 'Disponible à la maison',
+statusSub: reading ? 'Les autres le voient comme indisponible' : 'Personne ne le lit actuellement',
+primaryLabel: reading ? 'J’ai fini ce livre' : 'Je commence la lecture',
+primaryStyle: 'height: 54px; border-radius: 14px; border: none; font-family: Inter, sans-serif; font-size: 16px; font-weight: 600; ' + (reading ? 'background: #16201B; color: #FFFFFF' : 'background: #1F6B4A; color: #FFFFFF'),
+comments: [
+{ initial: 'C', name: 'Camille', date: 'il y a 2 j', avatarStyle: av('#2C4A6B'), text: 'Le début est dense, accrochez-vous jusqu’à Arrakis : après, impossible à lâcher.' },
+{ initial: 'J', name: 'Jules', date: '12 sept.', avatarStyle: av('#B5523B'), text: 'Lu avant de voir les films. Le livre va beaucoup plus loin sur la politique.' },
+{ initial: 'I', name: 'Inès', date: '3 août', avatarStyle: av('#6B4E8A'), text: 'Abandonné à la moitié, pas mon genre. Mais la couverture est jolie !' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

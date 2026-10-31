@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Recommandations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1F6B4A}a:hover{color:#154D35}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F3F4F1; font-family: Inter, system-ui, sans-serif; color: #16201B; display: flex; flex-direction: column; overflow: hidden">
+<div style="flex: 1; min-height: 0; overflow: hidden; padding: 48px 20px 0; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.5px">Pour toi</h1>
+<p style="margin: 0; font-size: 14px; color: #5B6660">D'après tes 23 lectures et les avis du foyer</p>
+</div>
+<a href="Livre.dc.html" style="display: flex; flex-direction: column; gap: 14px; padding: 18px; background: #16201B; color: #FFFFFF; border-radius: 18px; text-decoration: none">
+<span style="display: flex; gap: 16px">
+<span style="width: 84px; height: 126px; flex: none; border-radius: 6px; background: #C08A1E; color: #241800; box-sizing: border-box; padding: 9px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 13px; font-weight: 700">Hypérion</span>
+<span style="display: flex; flex-direction: column; gap: 6px">
+<span style="align-self: flex-start; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 10px; background: #DCEFE4; color: #155238">Disponible à la maison</span>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 700">Hypérion</span>
+<span style="font-size: 14px; color: #D3DAD6">Dan Simmons</span>
+<span style="font-size: 13px; line-height: 1.45; color: #D3DAD6">Parce que tu as aimé <b style="color: #FFFFFF">Dune</b> et <b style="color: #FFFFFF">Fondation</b></span>
+</span>
+</span>
+<span style="font-size: 13px; line-height: 1.45; color: #D3DAD6; padding: 12px; border-radius: 12px; background: #26302C">Camille : « Six histoires dans un seul livre, chacune meilleure que la précédente. »</span>
+<span style="height: 48px; border-radius: 12px; background: #3DDC84; color: #0F1513; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600">Je commence la lecture</span>
+</a>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: #5B6660">Aussi sur l'étagère</h2>
+<sc-for list="{{recos}}" as="r" hint-placeholder-count="3">
+<a href="Livre.dc.html" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #DDE1DC; text-decoration: none; color: #16201B">
+<span style="{{r.coverStyle}}"></span>
+<span style="display: flex; flex-direction: column; gap: 3px; flex: 1"><span style="font-size: 15px; font-weight: 600">{{r.title}} <span style="font-weight: 400; color: #5B6660">· {{r.author}}</span></span><span style="font-size: 13px; color: #5B6660">{{r.why}}</span></span>
+<span style="{{r.badgeStyle}}">{{r.status}}</span>
+</a>
+</sc-for>
+</div>
+</div>
+<nav aria-label="Navigation principale" style="display: flex; background: #FFFFFF; border-top: 1px solid #DDE1DC; padding: 6px 8px 22px">
+<a href="Main.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 52px; justify-content: center; text-decoration: none; color: #5B6660; font-size: 12px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"></path><path d="M5 17a3 3 0 0 1 3-3h11"></path></svg>Biblio</a>
+<a href="Lectures.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 52px; justify-content: center; text-decoration: none; color: #5B6660; font-size: 12px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h10v18l-5-4-5 4z"></path></svg>Lectures</a>
+<a href="Scan.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 52px; justify-content: center; text-decoration: none; color: #5B6660; font-size: 12px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V5h4M16 5h4v3M20 16v3h-4M8 19H4v-3"></path><path d="M8 9v6M11 9v6M14 9v6M17 9v6"></path></svg>Scanner</a>
+<a href="Recos.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 52px; justify-content: center; text-decoration: none; color: #1F6B4A; font-size: 12px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path></svg>Pour toi</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+var c = function (bg) {
+return 'width: 40px; height: 60px; flex: none; border-radius: 4px; background: ' + bg;
+};
+var b = function (reading) {
+return 'flex: none; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 10px; ' + (reading ? 'background: #FCE9C2; color: #6E4300' : 'background: #DCEFE4; color: #155238');
+};
+return {
+recos: [
+{ title: 'La Peste', author: 'Camus', why: 'Parce que tu as lu L’Étranger', status: 'Dispo', badgeStyle: b(false), coverStyle: c('#5E7A3A') },
+{ title: 'Le Meilleur des mondes', author: 'Huxley', why: 'Parce que tu as lu 1984', status: 'Dispo', badgeStyle: b(false), coverStyle: c('#2C4A6B') },
+{ title: 'La Horde du Contrevent', author: 'Damasio', why: 'Jules : « Le meilleur de l’année »', status: 'Jules lit', badgeStyle: b(true), coverStyle: c('#3B5A7A') }
+]
+};
+}
+}
+</script>
+</body>
+</html>
