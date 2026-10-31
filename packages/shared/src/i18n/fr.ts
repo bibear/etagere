@@ -92,6 +92,15 @@ export const fr = {
     commentPlaceholder: 'Laisser un avis pour le foyer…',
     commentLabel: 'Ton commentaire',
     publishComment: 'Publier le commentaire',
+    youAlreadyReadIt: "Tu l'as déjà lu",
+    someoneReading: '{{name}} le lit en ce moment',
+    lentSince: 'Prêté à {{name}} depuis le {{date}}',
+    putDown: 'Je le repose',
+    noReviews: "Pas encore d'avis. Sois le premier à en laisser un !",
+    confirmDelete: 'Confirmer la suppression',
+    editLabel: 'Modifier ton avis',
+    edited: 'modifié',
+    notFound: "Ce livre n'est plus dans la bibliothèque.",
   },
   scan: {
     title: 'Scanner un livre',
@@ -138,6 +147,12 @@ export const fr = {
     found: 'Bibliothèque « {{name}} » trouvée · version {{version}}',
     invalidAddress: "Cette adresse n'est pas valide.",
     useDefault: "Revenir à l'adresse par défaut",
+  },
+  dates: {
+    justNow: "à l'instant",
+    minutesAgo: 'il y a {{count}} min',
+    hoursAgo: 'il y a {{count}} h',
+    daysAgo: 'il y a {{count}} j',
   },
   errors: {
     invalid_input: 'Certaines informations ne sont pas valides.',

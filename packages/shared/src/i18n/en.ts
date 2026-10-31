@@ -92,6 +92,15 @@ export const en: Dictionary = {
     commentPlaceholder: 'Leave a review for the household…',
     commentLabel: 'Your comment',
     publishComment: 'Post the comment',
+    youAlreadyReadIt: 'You have already read it',
+    someoneReading: '{{name}} is reading it right now',
+    lentSince: 'Lent to {{name}} since {{date}}',
+    putDown: 'Put it down',
+    noReviews: 'No reviews yet. Be the first to leave one!',
+    confirmDelete: 'Confirm deletion',
+    editLabel: 'Edit your review',
+    edited: 'edited',
+    notFound: 'This book is no longer in the library.',
   },
   scan: {
     title: 'Scan a book',
@@ -138,6 +147,12 @@ export const en: Dictionary = {
     found: 'Library “{{name}}” found · version {{version}}',
     invalidAddress: 'This address is not valid.',
     useDefault: 'Back to the default address',
+  },
+  dates: {
+    justNow: 'just now',
+    minutesAgo: '{{count}} min ago',
+    hoursAgo: '{{count}} h ago',
+    daysAgo: '{{count}} d ago',
   },
   errors: {
     invalid_input: 'Some information is not valid.',
