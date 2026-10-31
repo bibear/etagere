@@ -76,7 +76,9 @@ fallback English. Server error responses carry a stable `code`, never user-facin
 
 Database file: `<dataDir>/etagere.sqlite`; covers: `<dataDir>/covers/<bookId>.jpg`.
 `dataDir` = `ETAGERE_DATA_DIR` env, else `./etagere-data` (Docker: `/data`). Migrations are numbered
-SQL files applied at start (`schema_migrations` table). Ids are UUID v4 strings; dates ISO 8601 UTC.
+TypeScript modules exporting their SQL (`server/src/db/migrations/`, D-17) applied at start (`schema_migrations` table). Ids are UUID v4 strings; dates ISO 8601 UTC.
+One repository module per table in `server/src/db/` (`profiles.ts`, `books.ts`, ...). The SQL
+function `fold(text)` lower-cases and strips accents for search (D-18).
 
 ```
 profiles  (id PK, name TEXT 1..40, color TEXT, created_at, updated_at, removed_at NULL)
