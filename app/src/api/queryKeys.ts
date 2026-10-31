@@ -14,4 +14,6 @@ export const queryKeys = {
   comments: ['comments'] as const,
   bookComments: (bookId: string) => ['comments', bookId] as const,
   me: ['me'] as const,
+  myReadings: ['me', 'readings'] as const,
+  myRecommendations: ['me', 'recommendations'] as const,
 };
