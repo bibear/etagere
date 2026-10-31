@@ -288,6 +288,23 @@ describe('books API', () => {
       expect(events).toEqual([{ type: 'books.changed', id: book.id }]);
     });
 
+    it('derives the source from the ISBN when the ISBN changes (D-31)', async () => {
+      const book = await add({ title: 'Dune', authors: [] });
+      const patch = async (payload: object) =>
+        (
+          await t.app.inject({
+            method: 'PATCH',
+            url: `/api/books/${book.id}`,
+            headers: as(me),
+            payload,
+          })
+        ).json();
+
+      expect(await patch({ isbn13: '9782266320481' })).toMatchObject({ source: 'lookup' });
+      expect(await patch({ title: 'Dune I' })).toMatchObject({ source: 'lookup' });
+      expect(await patch({ isbn13: null })).toMatchObject({ isbn13: null, source: 'manual' });
+    });
+
     it('refuses an ISBN already used by another book, an empty patch and unknown books', async () => {
       await add({ isbn13: '9782070368228', title: 'Les Misérables', authors: [] });
       const book = await add({ title: 'Dune', authors: [] });

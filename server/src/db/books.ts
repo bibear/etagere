@@ -229,6 +229,11 @@ export function updateBook(
       values.push(encode(patch[column as keyof typeof PATCH_COLUMNS]) as SqlValue);
     }
   }
+  // `source` follows the ISBN (D-31): a book with an ISBN counts as looked up.
+  if ('isbn13' in patch) {
+    sets.push('source = ?');
+    values.push(patch.isbn13 ? 'lookup' : 'manual');
+  }
   if (cover !== undefined) {
     sets.push('cover = ?');
     values.push(cover);
