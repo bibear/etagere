@@ -271,7 +271,8 @@ export const en: Dictionary = {
     not_found: 'Not found.',
     already_in_library: 'This book is already in the library.',
     upstream_unavailable: 'Open Library is not answering. Try again later.',
-    unknown_profile: 'Unknown profile on this server.',
+    unknown_profile:
+      'This server does not know your profile. Open your profile and save it to join again.',
     profile_mismatch: 'This device can only change its own profile.',
     outside_lan: 'The server only answers on the home Wi-Fi.',
     unavailable: 'This book is not available.',

@@ -271,7 +271,8 @@ export const fr = {
     not_found: 'Introuvable.',
     already_in_library: 'Ce livre est déjà dans la bibliothèque.',
     upstream_unavailable: 'Open Library ne répond pas. Réessaie plus tard.',
-    unknown_profile: 'Profil inconnu sur ce serveur.',
+    unknown_profile:
+      'Ce serveur ne connaît pas ton profil. Ouvre ton profil et enregistre-le pour le rejoindre.',
     profile_mismatch: 'Cet appareil ne peut modifier que son propre profil.',
     outside_lan: 'Le serveur ne répond que sur le Wi-Fi de la maison.',
     unavailable: "Ce livre n'est pas disponible.",
