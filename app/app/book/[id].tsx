@@ -17,6 +17,7 @@ import { Cover } from '../../src/components/Cover';
 import { Icon } from '../../src/components/Icon';
 import { Screen } from '../../src/components/Screen';
 import { formatRelativeDate } from '../../src/i18n/dates';
+import { useOffline } from '../../src/offline/ServerStatus';
 import { useI18n } from '../../src/i18n/I18nProvider';
 import { useApi, useSession } from '../../src/session/SessionProvider';
 import { useTheme } from '../../src/theme/ThemeProvider';
@@ -115,6 +116,7 @@ function ReadingPanel({ book }: { book: BookDetail }) {
         {available && (
           <Button
             label={t('book.startReading')}
+            needsServer
             onPress={() => action.mutate('start')}
             busy={pending === 'start'}
             disabled={action.isPending}
@@ -125,6 +127,7 @@ function ReadingPanel({ book }: { book: BookDetail }) {
             <Button
               variant="dark"
               label={t('book.finishReading')}
+              needsServer
               onPress={() => action.mutate('finish')}
               busy={pending === 'finish'}
               disabled={action.isPending}
@@ -132,6 +135,7 @@ function ReadingPanel({ book }: { book: BookDetail }) {
             <Button
               variant="secondary"
               label={t('book.putDown')}
+              needsServer
               onPress={() => action.mutate('putdown')}
               busy={pending === 'putdown'}
               disabled={action.isPending}
@@ -142,6 +146,7 @@ function ReadingPanel({ book }: { book: BookDetail }) {
           <Button
             variant="secondary"
             label={t('book.alreadyRead')}
+            needsServer
             onPress={() => action.mutate('already-read')}
             busy={pending === 'already-read'}
             disabled={action.isPending}
@@ -192,6 +197,7 @@ function CommentCard({ comment, bookId }: { comment: Comment; bookId: string }) 
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
+  const offline = useOffline();
   const own = comment.author.id === profile?.id;
 
   const refresh = () =>
@@ -270,7 +276,7 @@ function CommentCard({ comment, bookId }: { comment: Comment; bookId: string }) 
               <>
                 <Pressable
                   accessibilityRole="button"
-                  disabled={draft.trim() === '' || save.isPending}
+                  disabled={draft.trim() === '' || save.isPending || offline}
                   onPress={() => save.mutate(draft)}
                   style={styles.smallAction}
                 >
@@ -288,7 +294,7 @@ function CommentCard({ comment, bookId }: { comment: Comment; bookId: string }) 
               <>
                 <Pressable
                   accessibilityRole="button"
-                  disabled={remove.isPending}
+                  disabled={remove.isPending || offline}
                   onPress={() => remove.mutate()}
                   style={styles.smallAction}
                 >
@@ -347,7 +353,8 @@ function Reviews({ book }: { book: BookDetail }) {
   });
 
   const count = comments.data?.length ?? book.commentCount;
-  const canPublish = text.trim() !== '' && !publish.isPending;
+  const offline = useOffline();
+  const canPublish = text.trim() !== '' && !publish.isPending && !offline;
 
   return (
     <View style={styles.reviews}>
@@ -434,7 +441,7 @@ export default function BookScreen() {
       </Screen>
     );
   }
-  if (book.isError) {
+  if (book.isError && !book.data) {
     const missing = book.error instanceof ApiError && book.error.status === 404;
     return (
       <Screen>

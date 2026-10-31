@@ -47,7 +47,7 @@ export default function RootLayout() {
   if (!loaded && !error) return null;
 
   return (
-    <AppProviders>
+    <AppProviders persist>
       <RootStack />
     </AppProviders>
   );

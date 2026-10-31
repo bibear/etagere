@@ -2,12 +2,18 @@ import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { OfflineBanner } from '../offline/OfflineBanner';
 import { useTheme } from '../theme/ThemeProvider';
 
 /** Tab screen frame: safe area, background, 20 px side padding, scrollable content. */
 export function Screen({ children, scroll = true }: { children: ReactNode; scroll?: boolean }) {
   const { colors } = useTheme();
-  const content = <View style={styles.content}>{children}</View>;
+  const content = (
+    <View style={styles.content}>
+      <OfflineBanner />
+      {children}
+    </View>
+  );
   return (
     <SafeAreaView edges={['top']} style={[styles.root, { backgroundColor: colors.background }]}>
       {scroll ? <ScrollView contentContainerStyle={styles.scroll}>{content}</ScrollView> : content}

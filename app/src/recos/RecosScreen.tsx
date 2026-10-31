@@ -14,6 +14,7 @@ import { Cover } from '../components/Cover';
 import { Screen, ScreenTitle } from '../components/Screen';
 import { SectionLabel } from '../components/SectionLabel';
 import { type TFunction, useI18n } from '../i18n/I18nProvider';
+import { useOffline } from '../offline/ServerStatus';
 import { useApi } from '../session/SessionProvider';
 import { useTheme } from '../theme/ThemeProvider';
 
@@ -117,6 +118,7 @@ function FeaturedCard({ reco }: { reco: Reco }) {
   const api = useApi();
   const availabilityLabel = useAvailabilityLabel();
   const start = useStartReading();
+  const offline = useOffline();
   const { book } = reco;
   const dark = scheme === 'dark';
   // The design's dark card; in dark mode a raised surface keeps it distinct from the background.
@@ -206,15 +208,15 @@ function FeaturedCard({ reco }: { reco: Reco }) {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('book.startReading')}
-          accessibilityState={{ busy: start.isPending, disabled: start.isPending }}
-          disabled={start.isPending}
+          accessibilityState={{ busy: start.isPending, disabled: start.isPending || offline }}
+          disabled={start.isPending || offline}
           onPress={() => start.mutate(book)}
           style={({ pressed }) => [
             styles.cta,
             {
               backgroundColor: colors.scannerAccent,
               borderRadius: radii.md,
-              opacity: pressed || start.isPending ? 0.8 : 1,
+              opacity: start.isPending || offline ? 0.55 : pressed ? 0.8 : 1,
             },
           ]}
         >

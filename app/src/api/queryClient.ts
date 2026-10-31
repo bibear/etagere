@@ -8,6 +8,8 @@ export function createQueryClient(): QueryClient {
     defaultOptions: {
       queries: {
         staleTime: 30_000,
+        // Kept a day so the offline copy holds every screen visited, not only the current one.
+        gcTime: 24 * 60 * 60 * 1000,
         retry: (failureCount, error) =>
           failureCount < 1 && error instanceof ApiError && error.status === 0,
       },

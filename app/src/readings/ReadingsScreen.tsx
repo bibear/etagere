@@ -131,6 +131,7 @@ function CurrentReading({ item }: { item: ReadingItem }) {
         <View style={styles.flex}>
           <Button
             label={t('readings.finished')}
+            needsServer
             onPress={() => action.mutate('finish')}
             busy={pending === 'finish'}
             disabled={action.isPending}
@@ -140,6 +141,7 @@ function CurrentReading({ item }: { item: ReadingItem }) {
           <Button
             variant="secondary"
             label={t('readings.putDown')}
+            needsServer
             onPress={() => action.mutate('putdown')}
             busy={pending === 'putdown'}
             disabled={action.isPending}

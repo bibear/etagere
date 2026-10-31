@@ -1,5 +1,6 @@
 import { ActivityIndicator, Pressable, Text } from 'react-native';
 
+import { useOffline } from '../offline/ServerStatus';
 import { useTheme } from '../theme/ThemeProvider';
 
 export type ButtonVariant = 'primary' | 'dark' | 'secondary' | 'link';
@@ -16,6 +17,7 @@ export function Button({
   busy = false,
   accessibilityLabel,
   testID,
+  needsServer = false,
 }: {
   label: string;
   onPress: () => void;
@@ -24,9 +26,12 @@ export function Button({
   busy?: boolean;
   accessibilityLabel?: string;
   testID?: string;
+  /** A write: disabled while the server is unreachable (offline, read-only). */
+  needsServer?: boolean;
 }) {
   const { colors, fonts, radii } = useTheme();
-  const inactive = disabled || busy;
+  const offline = useOffline();
+  const inactive = disabled || busy || (needsServer && offline);
   const filled = variant === 'primary' || variant === 'dark';
   const background =
     variant === 'primary' ? colors.primary : variant === 'dark' ? colors.text : colors.surface;

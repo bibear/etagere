@@ -272,6 +272,7 @@ function BookForm({ book, initialIsbn }: { book?: BookDetail; initialIsbn?: stri
             : t(book ? 'bookForm.submitSave' : 'bookForm.submitAdd')
         }
         busy={save.isPending}
+        needsServer
         onPress={() => save.mutate()}
       />
 
@@ -302,6 +303,7 @@ function BookForm({ book, initialIsbn }: { book?: BookDetail; initialIsbn?: stri
               label={remove.isPending ? t('bookForm.deleting') : t('bookForm.deleteConfirm')}
               variant="dark"
               busy={remove.isPending}
+              needsServer
               onPress={() => remove.mutate()}
             />
             <Button

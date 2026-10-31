@@ -136,6 +136,7 @@ function MyProfile() {
       </View>
       <Button
         label={t('common.save')}
+        needsServer
         onPress={() => save.mutate()}
         busy={save.isPending}
         disabled={!valid || !changed}
@@ -210,6 +211,7 @@ function MemberRow({ member, isMe }: { member: Profile; isMe: boolean }) {
               <Button
                 variant="dark"
                 label={t('profile.removeConfirm')}
+                needsServer
                 onPress={() => remove.mutate()}
                 busy={remove.isPending}
               />

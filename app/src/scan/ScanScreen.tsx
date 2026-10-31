@@ -455,6 +455,7 @@ function SheetContent({
           <Button
             label={t('scan.addToLibrary')}
             busy={adding}
+            needsServer
             onPress={() => onAdd(phase.candidate)}
           />
           <Links left={scanAnother} right={typeIsbn} />

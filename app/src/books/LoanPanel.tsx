@@ -54,6 +54,7 @@ export function LoanPanel({ book, disabled = false }: { book: BookDetail; disabl
       <View style={styles.panel}>
         <Button
           label={t('loan.returned')}
+          needsServer
           onPress={() => giveBack.mutate()}
           busy={giveBack.isPending}
           disabled={disabled}
@@ -69,6 +70,7 @@ export function LoanPanel({ book, disabled = false }: { book: BookDetail; disabl
         <Button
           variant="secondary"
           label={t('loan.lend')}
+          needsServer
           onPress={() => setBorrower('')}
           disabled={disabled}
         />
@@ -126,6 +128,7 @@ export function LoanPanel({ book, disabled = false }: { book: BookDetail; disabl
         <View style={styles.flex}>
           <Button
             label={t('loan.confirm')}
+            needsServer
             onPress={() => lend.mutate(name)}
             busy={lend.isPending}
             disabled={name === '' || disabled}

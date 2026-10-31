@@ -256,9 +256,14 @@ service worker caching the shell. Opening `http://<server>:4848` on a phone give
 
 ## Offline
 
-The app persists the last successful query results (TanStack Query persister on AsyncStorage /
-localStorage). Without the server it shows the cached library read-only with a banner
-"Server unreachable — showing the last copy"; mutations are disabled.
+The app persists the last successful query results (TanStack Query `dehydrate` / `hydrate`,
+`app/src/offline/`) as one AsyncStorage / localStorage entry `etagere.queryCache`, saved at most once
+a second after a successful fetch (search results excepted) and restored before the app shows. The
+copy belongs to one server and one profile and expires after 30 days; queries stay in memory 24 h
+(`gcTime`) so every visited screen is in it. Any query or mutation failing with a network error
+switches the app to offline: screens keep the cached data with a banner "Server unreachable —
+showing the last copy", and every write (`<Button needsServer>`, `useOffline()`) is disabled. While
+offline `/api/health` is probed every 10 s; when it answers, every query is refreshed.
 
 ## Scanning
 
