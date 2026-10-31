@@ -1,6 +1,6 @@
 import { type BookDetail, type Comment, LIMITS } from '@etagere/shared';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
@@ -463,7 +463,14 @@ export default function BookScreen() {
 
   return (
     <Screen>
-      <BackLink label={t('book.back')} />
+      <View style={styles.topBar}>
+        <BackLink label={t('book.back')} />
+        <Button
+          variant="link"
+          label={t('bookForm.editTitle')}
+          onPress={() => router.push(`/book/edit/${detail.id}`)}
+        />
+      </View>
       <View style={styles.hero}>
         <Cover
           title={detail.title}
@@ -513,6 +520,7 @@ export default function BookScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
+  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   hero: { flexDirection: 'row', gap: 18, alignItems: 'flex-end' },
   heroText: { flex: 1, gap: 6, paddingBottom: 4 },
   statusBox: {
