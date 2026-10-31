@@ -102,4 +102,22 @@ describe('GET /api/events (realtime)', () => {
     expect(response.statusCode).toBe(403);
     expect(response.json()).toEqual({ code: 'outside_lan' });
   });
+
+  it('refuses a WebSocket opened by a page of another website', async () => {
+    await expect(
+      t.app.injectWS('/api/events', {
+        socket: { remoteAddress: '192.168.1.42' },
+        headers: { host: '192.168.1.20:4848', origin: 'https://evil.example' },
+      } as never),
+    ).rejects.toThrow(/403/);
+  });
+
+  it('accepts a WebSocket opened by the web app of the home server', async () => {
+    const socket = await t.app.injectWS('/api/events', {
+      socket: { remoteAddress: '192.168.1.42' },
+      headers: { host: '192.168.1.20:4848', origin: 'http://192.168.1.20:4848' },
+    } as never);
+    sockets.push(socket);
+    expect(socket.readyState).toBe(socket.OPEN);
+  });
 });

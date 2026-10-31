@@ -86,7 +86,8 @@ fallback English. Server error responses carry a stable `code`, never user-facin
   The `Host` header must also name the server on the home network (a private IP literal,
   `localhost`, a `*.local` name, or a name listed in `ETAGERE_ALLOWED_HOSTS`, comma separated);
   any other name (DNS rebinding from a public website) or no Host: `403 { code: "outside_lan" }`.
-  The same names are the allowed CORS origins.
+  The same names are the allowed CORS origins; a request (WebSocket included) carrying any other
+  `Origin` answers `403 { code: "outside_lan" }`.
   Everyone on the LAN can do everything (household trust model, by design).
 
 ## Data model (SQLite, `node:sqlite`)

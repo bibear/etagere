@@ -94,6 +94,12 @@ export function buildApp(options: BuildAppOptions): FastifyInstance {
     if (!isAllowedHost(request.headers.host, allowedHosts)) {
       return reply.code(403).send({ code: 'outside_lan' });
     }
+    // A page of another website: CORS hides the answers, but not from a WebSocket (realtime
+    // events), so any request it sends is refused outright.
+    const { origin } = request.headers;
+    if (origin !== undefined && !isLocalOrigin(origin, allowedHosts)) {
+      return reply.code(403).send({ code: 'outside_lan' });
+    }
   });
 
   // The Expo web dev app (`npm run web`, http://localhost:8081) is cross-origin: every method

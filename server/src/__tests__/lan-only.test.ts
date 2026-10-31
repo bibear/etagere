@@ -135,6 +135,16 @@ describe('LAN-only guard', () => {
     },
   );
 
+  it('answers 403 outside_lan to a request sent by a page of another website', async () => {
+    const response = await t.app.inject({
+      method: 'GET',
+      url: '/api/profiles',
+      remoteAddress: '192.168.1.42',
+      headers: { origin: 'https://evil.example' },
+    });
+    expect(response.statusCode).toBe(403);
+  });
+
   it('serves a host name listed in allowedHosts', async () => {
     const custom = buildTestApp({ allowedHosts: ['etagere.home.arpa'] });
     try {
