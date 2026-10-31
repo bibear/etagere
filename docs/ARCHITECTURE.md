@@ -102,8 +102,14 @@ its history stays and shows its name.
 
 ## HTTP API (prefix `/api`, JSON)
 
-Errors are always `{ code: string, ...details }`. Validation errors: `400 invalid_input`.
-Unexpected: `500 internal_error` (no internals leaked).
+Errors are always `{ code: string, ...details }`. Validation errors: `400 { code: "invalid_input", fields: string[] }`.
+Unknown route: `404 not_found`. Unexpected: `500 internal_error` (no internals leaked).
+
+Server code layout: `buildApp(deps)` in `server/src/app.ts` (deps: `db`, `fetch`, `now`, `dataDir`,
+`lanUrls`, logger, reachable as `app.deps`); one plugin per route group in `server/src/routes/`
+(registered in `routes/index.ts`); `parseInput(schema, value)` and `HttpError` in `server/src/http/`;
+`requireProfile(request)` resolves `X-Etagere-Profile` or throws `401 unknown_profile`. Tests build
+the app with `buildTestApp()` (`server/src/__tests__/support/test-app.ts`): in-memory db, fixed clock, no network.
 
 ### Server
 - `GET /api/health` → `{ status: "ok", name: "Étagère", version, householdName }`
