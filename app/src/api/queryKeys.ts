@@ -7,6 +7,7 @@ import type { BookFilter, BookSort } from '@etagere/shared';
 export const queryKeys = {
   serverInfo: (serverUrl: string) => ['server-info', serverUrl] as const,
   profiles: ['profiles'] as const,
+  health: (serverUrl: string) => ['health', serverUrl] as const,
   books: ['books'] as const,
   bookList: (params: { query: string; filter: BookFilter; sort: BookSort }) =>
     ['books', 'list', params] as const,
