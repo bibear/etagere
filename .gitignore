@@ -19,3 +19,5 @@ app/android/
 server/LICENSE
 server/dist-test-*/
 *.tgz
+eas-build.json
+*.apk
