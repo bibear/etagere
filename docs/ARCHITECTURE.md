@@ -186,7 +186,7 @@ BookDetail    = BookSummary & { genres, publisher, year, pages, description, sou
 ### Comments
 - `GET /api/books/:id/comments` → `{ comments: Comment[] }` newest first
 - `POST /api/books/:id/comments` body `{ text }` → `201 Comment`
-- `PATCH /api/comments/:id` / `DELETE /api/comments/:id` → author only, else `403 not_author`
+- `PATCH /api/comments/:id` body `{ text }` → `200 Comment` / `DELETE /api/comments/:id` → `204`; author only, else `403 not_author`
 
 `Comment = { id, bookId, author: {id,name,color}, text, createdAt, updatedAt }`
 

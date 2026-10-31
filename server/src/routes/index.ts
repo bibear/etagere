@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 
 import { bookRoutes } from './books';
+import { commentRoutes } from './comments';
 import { coverRoutes } from './covers';
 import { lookupRoutes } from './lookup';
 import { profileRoutes } from './profiles';
@@ -15,4 +16,5 @@ export async function apiRoutes(app: FastifyInstance): Promise<void> {
   await app.register(lookupRoutes);
   await app.register(coverRoutes);
   await app.register(readingRoutes);
+  await app.register(commentRoutes);
 }
