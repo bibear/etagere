@@ -58,7 +58,7 @@ export function LoanPanel({ book, disabled = false }: { book: BookDetail; disabl
           busy={giveBack.isPending}
           disabled={disabled}
         />
-        {failure != null && <ErrorLine message={errorMessage(t, failure)} />}
+        {failure ? <ErrorLine message={errorMessage(t, failure)} /> : null}
       </View>
     );
   }
@@ -132,7 +132,7 @@ export function LoanPanel({ book, disabled = false }: { book: BookDetail; disabl
           />
         </View>
       </View>
-      {failure != null && <ErrorLine message={errorMessage(t, failure)} />}
+      {failure ? <ErrorLine message={errorMessage(t, failure)} /> : null}
     </View>
   );
 }
