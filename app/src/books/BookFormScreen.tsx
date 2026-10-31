@@ -28,7 +28,7 @@ import {
   type BookFormValues,
   type FieldErrors,
   bookInputFromForm,
-  bookPatchFromInput,
+  bookPatchFromForm,
   emptyBookForm,
   fieldsFromPaths,
   formFromBook,
@@ -151,15 +151,16 @@ function BookForm({ book, initialIsbn }: { book?: BookDetail; initialIsbn?: stri
 
   const save = useMutation({
     mutationFn: async () => {
-      const result = bookInputFromForm(values);
+      const result = bookInputFromForm(values, book);
       if (!result.ok) {
         setErrors(result.errors);
         return null;
       }
       setErrors({});
-      return book
-        ? updateBook(api, book.id, bookPatchFromInput(result.input))
-        : createBook(api, result.input);
+      if (!book) return createBook(api, result.input);
+      const patch = bookPatchFromForm(book, values, result.input);
+      // Nothing changed: no request (an empty PATCH is refused), back to the book.
+      return Object.keys(patch).length === 0 ? book : updateBook(api, book.id, patch);
     },
     onMutate: () => setNotice(null),
     onSuccess: async (saved) => {

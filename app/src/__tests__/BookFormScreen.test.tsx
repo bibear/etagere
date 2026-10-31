@@ -228,16 +228,37 @@ describe('edit and delete a book', () => {
 
     await waitFor(() => expect(server.calls.some((c) => c.method === 'PATCH')).toBe(true));
     expect(server.calls.find((c) => c.method === 'PATCH')?.body).toEqual({
-      isbn13: '9782352940159',
       title: 'Le Nom du vent (poche)',
-      authors: ['Patrick Rothfuss'],
-      genres: ['Fantasy'],
-      publisher: 'Bragelonne',
-      year: 2009,
       pages: null,
-      description: null,
     });
     expect(await screen.findByText('Detail stub')).toBeTruthy();
+  });
+
+  it('keeps a genre that contains commas when only the title changes', async () => {
+    const book = { ...BOOK, genres: ['Fiction, fantasy, general'] };
+    const { server } = await renderAt('/book/edit/b1', {
+      'GET /api/books/b1': { body: book },
+      'PATCH /api/books/b1': (body) => ({ body: { ...book, ...(body as object) } }),
+    });
+    expect(await screen.findByDisplayValue('Le Nom du vent')).toBeTruthy();
+
+    await type('Titre', 'Le Nom du vent (poche)');
+    await press('Enregistrer les modifications');
+
+    await waitFor(() => expect(server.calls.some((c) => c.method === 'PATCH')).toBe(true));
+    expect(server.calls.find((c) => c.method === 'PATCH')?.body).toEqual({
+      title: 'Le Nom du vent (poche)',
+    });
+  });
+
+  it('goes back without a request when nothing changed', async () => {
+    const { server } = await renderAt('/book/edit/b1', { 'GET /api/books/b1': { body: BOOK } });
+    expect(await screen.findByDisplayValue('Le Nom du vent')).toBeTruthy();
+
+    await press('Enregistrer les modifications');
+
+    expect(await screen.findByText('Detail stub')).toBeTruthy();
+    expect(server.calls.some((c) => c.method === 'PATCH')).toBe(false);
   });
 
   it('deletes only after confirmation, then goes back to the library', async () => {

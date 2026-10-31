@@ -111,8 +111,15 @@ export type BookFormResult = { ok: true; input: BookInput } | { ok: false; error
 /**
  * Validates the form with the shared schema (same limits as the server) and builds the
  * `BookInput` to send. Empty optional fields become null; the ISBN is normalised to ISBN-13.
+ * When editing `original`, an untouched authors / genres field keeps the book's own list: an Open
+ * Library subject such as "Fiction, science fiction, general" must not be split on its commas.
  */
-export function bookInputFromForm(values: BookFormValues): BookFormResult {
+export function bookInputFromForm(values: BookFormValues, original?: BookDetail): BookFormResult {
+  const initial = original && formFromBook(original);
+  const list = (field: 'authors' | 'genres') =>
+    original && initial && values[field] === initial[field]
+      ? [...(original[field] ?? [])]
+      : splitList(values[field]);
   const errors: FieldErrors = {};
   const year = parseInteger(values.year);
   const pages = parseInteger(values.pages);
@@ -122,8 +129,8 @@ export function bookInputFromForm(values: BookFormValues): BookFormResult {
   const candidate = {
     isbn13: values.isbn.trim() === '' ? null : values.isbn,
     title: values.title,
-    authors: splitList(values.authors),
-    genres: splitList(values.genres),
+    authors: list('authors'),
+    genres: list('genres'),
     publisher: values.publisher,
     year: year === 'invalid' ? null : year,
     pages: pages === 'invalid' ? null : pages,
@@ -142,8 +149,32 @@ export function bookInputFromForm(values: BookFormValues): BookFormResult {
   return { ok: true, input: parsed.data };
 }
 
-/** The PATCH body of an edit: the whole form, without the cover (unchanged on edit). */
-export function bookPatchFromInput(input: BookInput): Partial<BookInput> {
-  const { coverSourceUrl: _cover, ...patch } = input;
-  return patch;
+const INPUT_KEY_OF_FIELD: Record<BookFormField, Exclude<keyof BookInput, 'coverSourceUrl'>> = {
+  isbn: 'isbn13',
+  title: 'title',
+  authors: 'authors',
+  genres: 'genres',
+  publisher: 'publisher',
+  year: 'year',
+  pages: 'pages',
+  description: 'description',
+};
+
+/**
+ * The PATCH body of an edit: only the fields the member changed (never the cover, unchanged on
+ * edit). Empty when nothing changed.
+ */
+export function bookPatchFromForm(
+  book: BookDetail,
+  values: BookFormValues,
+  input: BookInput,
+): Partial<BookInput> {
+  const initial = formFromBook(book);
+  const patch: Record<string, unknown> = {};
+  for (const [field, key] of Object.entries(INPUT_KEY_OF_FIELD)) {
+    if (values[field as BookFormField] !== initial[field as BookFormField]) {
+      patch[key] = input[key] ?? null;
+    }
+  }
+  return patch as Partial<BookInput>;
 }

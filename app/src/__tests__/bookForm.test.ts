@@ -2,7 +2,7 @@ import type { BookCandidate, BookDetail } from '@etagere/shared';
 
 import {
   bookInputFromForm,
-  bookPatchFromInput,
+  bookPatchFromForm,
   emptyBookForm,
   fieldsFromPaths,
   formFromBook,
@@ -131,10 +131,50 @@ describe('form helpers', () => {
     );
   });
 
-  it('never sends the cover on edit', () => {
-    expect(bookPatchFromInput({ title: 'A', authors: [], coverSourceUrl: null })).toEqual({
-      title: 'A',
-      authors: [],
+  describe('edit', () => {
+    const book = {
+      id: 'b1',
+      isbn13: '9782070360536',
+      title: 'Vol de nuit',
+      authors: ['Saint-Exupéry, Antoine de'],
+      genres: ['Fiction, science fiction, general', 'Aviation'],
+      publisher: null,
+      year: 1931,
+      pages: null,
+      description: null,
+    } as unknown as BookDetail;
+
+    it('sends only the changed fields, never re-splitting untouched lists', () => {
+      const values = { ...formFromBook(book), title: 'Vol de nuit (Folio)' };
+      const result = bookInputFromForm(values, book);
+      if (!result.ok) throw new Error('form should be valid');
+
+      expect(result.input.genres).toEqual(['Fiction, science fiction, general', 'Aviation']);
+      expect(result.input.authors).toEqual(['Saint-Exupéry, Antoine de']);
+      expect(bookPatchFromForm(book, values, result.input)).toEqual({
+        title: 'Vol de nuit (Folio)',
+      });
+    });
+
+    it('splits a list the member edited, and sends cleared fields as null', () => {
+      const values = { ...formFromBook(book), genres: 'Aviation; Classique', year: '' };
+      const result = bookInputFromForm(values, book);
+      if (!result.ok) throw new Error('form should be valid');
+
+      expect(bookPatchFromForm(book, values, result.input)).toEqual({
+        genres: ['Aviation', 'Classique'],
+        year: null,
+      });
+    });
+
+    it('sends nothing when nothing changed, and never the cover', () => {
+      const values = {
+        ...formFromBook(book),
+        coverSourceUrl: 'https://covers.openlibrary.org/b/isbn/9782070360536-L.jpg',
+      };
+      const result = bookInputFromForm(values, book);
+      if (!result.ok) throw new Error('form should be valid');
+      expect(bookPatchFromForm(book, values, result.input)).toEqual({});
     });
   });
 });
