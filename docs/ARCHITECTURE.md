@@ -252,6 +252,8 @@ service worker caching the shell. Opening `http://<server>:4848` on a phone give
   address is forgotten); then the onboarding offers the server settings screen: scan the server QR
   code (native only, `expo-camera` QR mode; any `http(s)://` payload, normalised, saved once its
   `/api/health` answers) or type the address. The PWA uses its own origin (no scan button).
+  When the device already has a profile, saving a new address first writes that profile to the
+  new server (`PUT /api/profiles/:id`, same id), so the member keeps their identity there.
 - The onboarding card ("Library found · etagere.local · 128 books · 4 members") comes from `/api/server-info`.
 
 ## Offline

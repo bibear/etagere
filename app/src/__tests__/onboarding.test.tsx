@@ -205,6 +205,47 @@ describe('server settings', () => {
     expect(data[SESSION_STORAGE_KEY]).toBeUndefined();
   });
 
+  it('registers the device profile on the new server before switching to it', async () => {
+    const api = fakeFetch({
+      'GET /api/health': { body: HEALTH },
+      [`PUT /api/profiles/${TEST_PROFILE.id}`]: {
+        body: { ...TEST_PROFILE, createdAt: '2026-10-31T10:00:00.000Z' },
+      },
+      ...libraryRoutes,
+    });
+    const { data } = await renderApp(api, { profile: TEST_PROFILE, initialUrl: '/server' });
+
+    await fireEvent.changeText(await screen.findByLabelText('Adresse'), '192.168.1.30');
+    await fireEvent.press(screen.getByRole('button', { name: 'Enregistrer' }));
+
+    await waitFor(() =>
+      expect(JSON.parse(data[SESSION_STORAGE_KEY] ?? '{}')).toMatchObject({
+        serverUrl: 'http://192.168.1.30:4848',
+      }),
+    );
+    const put = api.calls.find((call) => call.method === 'PUT');
+    expect(put?.url).toBe(`http://192.168.1.30:4848/api/profiles/${TEST_PROFILE.id}`);
+    expect(put?.body).toEqual({ name: TEST_PROFILE.name, color: TEST_PROFILE.color });
+    expect(put?.headers['x-etagere-profile']).toBe(TEST_PROFILE.id);
+  });
+
+  it('keeps the old server when the new one refuses the profile', async () => {
+    const api = fakeFetch({
+      'GET /api/health': { body: HEALTH },
+      [`PUT /api/profiles/${TEST_PROFILE.id}`]: {
+        status: 400,
+        body: { code: 'invalid_input', fields: ['color'] },
+      },
+    });
+    const { data } = await renderApp(api, { profile: TEST_PROFILE, initialUrl: '/server' });
+
+    await fireEvent.changeText(await screen.findByLabelText('Adresse'), '192.168.1.30');
+    await fireEvent.press(screen.getByRole('button', { name: 'Enregistrer' }));
+
+    expect(await screen.findByText(/valide/)).toBeTruthy();
+    expect(data[SESSION_STORAGE_KEY]).toBeUndefined();
+  });
+
   it('saves a working address and uses it from then on', async () => {
     const api = fakeFetch({
       'GET /api/health': { body: HEALTH },

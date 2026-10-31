@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 
 import { errorMessage } from '../src/api/errors';
+import { putProfile } from '../src/api/profiles';
 import { BackLink } from '../src/components/BackLink';
 import { Button } from '../src/components/Button';
 import { Screen, ScreenTitle } from '../src/components/Screen';
@@ -27,7 +28,7 @@ export default function ServerSettingsScreen() {
   const { colors, fonts, radii } = useTheme();
   const { t } = useI18n();
   const queryClient = useQueryClient();
-  const { api, serverUrl, hasSavedServerUrl, saveServerUrl } = useSession();
+  const { api, profile, serverUrl, hasSavedServerUrl, saveServerUrl } = useSession();
   const [address, setAddress] = useState(serverUrl);
   const [scanning, setScanning] = useState(false);
 
@@ -50,6 +51,14 @@ export default function ServerSettingsScreen() {
         typed = fromCode;
       }
       const { url } = await probe(typed);
+      // Another server does not know this device's profile yet: join it with the same id, name
+      // and color (an existing or removed profile of this id is updated / restored).
+      if (profile) {
+        await putProfile(api.withBaseUrl(url), profile.id, {
+          name: profile.name,
+          color: profile.color,
+        });
+      }
       await saveServerUrl(url);
     },
     onSuccess: () => {
