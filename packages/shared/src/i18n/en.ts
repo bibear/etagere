@@ -102,6 +102,14 @@ export const en: Dictionary = {
     edited: 'edited',
     notFound: 'This book is no longer in the library.',
   },
+  loan: {
+    lend: 'Lend this book',
+    borrowerLabel: 'Lent to',
+    borrowerPlaceholder: 'Their first name',
+    hint: 'The book stays unavailable for the household until it comes back.',
+    confirm: 'Lend',
+    returned: "It's back",
+  },
   bookForm: {
     addTitle: 'Add a book',
     editTitle: 'Edit the book',

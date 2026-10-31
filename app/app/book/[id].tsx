@@ -9,6 +9,7 @@ import { ApiError } from '../../src/api/client';
 import { deleteComment, editComment, postComment, useComments } from '../../src/api/comments';
 import { errorMessage } from '../../src/api/errors';
 import { queryKeys } from '../../src/api/queryKeys';
+import { LoanPanel } from '../../src/books/LoanPanel';
 import { Avatar } from '../../src/components/Avatar';
 import { BackLink } from '../../src/components/BackLink';
 import { Button } from '../../src/components/Button';
@@ -146,6 +147,7 @@ function ReadingPanel({ book }: { book: BookDetail }) {
             disabled={action.isPending}
           />
         )}
+        <LoanPanel book={book} />
         {action.isError && (
           <Text
             accessibilityRole="alert"

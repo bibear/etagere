@@ -102,6 +102,14 @@ export const fr = {
     edited: 'modifié',
     notFound: "Ce livre n'est plus dans la bibliothèque.",
   },
+  loan: {
+    lend: 'Prêter ce livre',
+    borrowerLabel: 'Prêté à',
+    borrowerPlaceholder: 'Prénom de la personne',
+    hint: "Le livre restera indisponible pour le foyer jusqu'à son retour.",
+    confirm: 'Prêter',
+    returned: 'Il est revenu',
+  },
   bookForm: {
     addTitle: 'Ajouter un livre',
     editTitle: 'Modifier le livre',
