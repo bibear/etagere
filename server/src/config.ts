@@ -10,6 +10,8 @@ export interface Config {
   mdns: boolean;
   /** ETAGERE_PUBLIC_DIR: the exported web app to serve; null = the package's `public/`. */
   publicDir: string | null;
+  /** ETAGERE_ALLOWED_HOSTS: extra host names (comma separated) besides IPs, localhost, *.local. */
+  allowedHosts: string[];
 }
 
 export const DEFAULT_PORT = 4848;
@@ -28,5 +30,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env, cwd = process.c
     logLevel: env.LOG_LEVEL || 'info',
     mdns: !['0', 'false', 'off', 'no'].includes((env.ETAGERE_MDNS ?? '').trim().toLowerCase()),
     publicDir: env.ETAGERE_PUBLIC_DIR ? resolve(cwd, env.ETAGERE_PUBLIC_DIR) : null,
+    allowedHosts: (env.ETAGERE_ALLOWED_HOSTS ?? '')
+      .split(',')
+      .map((host) => host.trim().toLowerCase())
+      .filter((host) => host !== ''),
   };
 }

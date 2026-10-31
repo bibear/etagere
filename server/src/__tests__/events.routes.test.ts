@@ -18,9 +18,10 @@ describe('GET /api/events (realtime)', () => {
   });
 
   const connect = async (): Promise<{ socket: WebSocket; received: ServerEvent[] }> => {
-    // injectWS has no socket address by default: a phone on the home Wi-Fi.
+    // injectWS has no socket address nor Host by default: a phone on the home Wi-Fi.
     const socket = await t.app.injectWS('/api/events', {
       socket: { remoteAddress: '192.168.1.42' },
+      headers: { host: '192.168.1.20:4848' },
     } as never);
     sockets.push(socket);
     const received: ServerEvent[] = [];

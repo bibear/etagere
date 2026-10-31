@@ -83,6 +83,10 @@ fallback English. Server error responses carry a stable `code`, never user-facin
   answer `401 { code: "unknown_profile" }`.
 - The server only answers clients on private networks (loopback, RFC 1918, link-local, IPv6 ULA /
   link-local, including IPv4-mapped forms). Anything else: `403 { code: "outside_lan" }`.
+  The `Host` header must also name the server on the home network (a private IP literal,
+  `localhost`, a `*.local` name, or a name listed in `ETAGERE_ALLOWED_HOSTS`, comma separated);
+  any other name (DNS rebinding from a public website) or no Host: `403 { code: "outside_lan" }`.
+  The same names are the allowed CORS origins.
   Everyone on the LAN can do everything (household trust model, by design).
 
 ## Data model (SQLite, `node:sqlite`)

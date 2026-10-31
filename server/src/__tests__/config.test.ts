@@ -11,7 +11,14 @@ describe('loadConfig', () => {
       logLevel: 'info',
       mdns: true,
       publicDir: null,
+      allowedHosts: [],
     });
+  });
+
+  it('reads ETAGERE_ALLOWED_HOSTS as a comma-separated list', () => {
+    expect(
+      loadConfig({ ETAGERE_ALLOWED_HOSTS: ' Etagere.home.arpa , ,nas.lan' }).allowedHosts,
+    ).toEqual(['etagere.home.arpa', 'nas.lan']);
   });
 
   it('reads ETAGERE_PUBLIC_DIR against the working directory', () => {

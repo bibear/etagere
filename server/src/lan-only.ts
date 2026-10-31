@@ -39,17 +39,49 @@ export function isLocalAddress(address: string): boolean {
   return isIpv4(candidate) ? isLocalIpv4(candidate) : isLocalIpv6(candidate);
 }
 
-/** Allowed CORS origin: `localhost` (Expo web dev server) or a private address. */
-export function isLocalOrigin(origin: string): boolean {
+/** The host name of a `Host` header value (`name:port`, `[v6]:port`), lowercased, no port. */
+function hostnameOf(host: string): string {
+  const value = host.trim().toLowerCase();
+  if (value.startsWith('[')) {
+    const end = value.indexOf(']');
+    return end === -1 ? '' : value.slice(1, end);
+  }
+  const colon = value.lastIndexOf(':');
+  // More than one colon without brackets: a bare IPv6 address, no port to strip.
+  const name = colon !== -1 && value.indexOf(':') === colon ? value.slice(0, colon) : value;
+  return name.replace(/\.$/, '');
+}
+
+/**
+ * True when a host name designates this server on the home network: a private IP literal,
+ * `localhost`, a `*.local` mDNS name, or a name listed in `extraHosts` (ETAGERE_ALLOWED_HOSTS).
+ * Any other name means a page reached us through DNS rebinding (D-03).
+ */
+function isHomeHostname(hostname: string, extraHosts: readonly string[]): boolean {
+  if (hostname === '') return false;
+  return (
+    hostname === 'localhost' ||
+    hostname.endsWith('.local') ||
+    isLocalAddress(hostname) ||
+    extraHosts.some((extra) => extra.trim().toLowerCase() === hostname)
+  );
+}
+
+/** Allowed `Host` header (see `isHomeHostname`); a missing Host is refused. */
+export function isAllowedHost(
+  host: string | undefined,
+  extraHosts: readonly string[] = [],
+): boolean {
+  return host !== undefined && isHomeHostname(hostnameOf(host), extraHosts);
+}
+
+/** Allowed CORS / WebSocket origin: `localhost` (Expo web dev server), `*.local`, a private address, or an extra host. */
+export function isLocalOrigin(origin: string, extraHosts: readonly string[] = []): boolean {
   let hostname: string;
   try {
     hostname = new URL(origin).hostname;
   } catch {
     return false;
   }
-  return (
-    hostname === 'localhost' ||
-    hostname.endsWith('.local') ||
-    isLocalAddress(hostname.replace(/^\[|\]$/g, ''))
-  );
+  return isHomeHostname(hostname.toLowerCase().replace(/^\[|\]$/g, ''), extraHosts);
 }

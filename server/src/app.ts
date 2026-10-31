@@ -6,7 +6,7 @@ import Fastify, { type FastifyBaseLogger, type FastifyInstance } from 'fastify';
 import { CoverStore } from './covers';
 import type { Database } from './db/database';
 import { installErrorHandling } from './http/errors';
-import { isLocalAddress, isLocalOrigin } from './lan-only';
+import { isAllowedHost, isLocalAddress, isLocalOrigin } from './lan-only';
 import { hasPwa, pwaFallback, pwaStaticOptions } from './pwa/serve';
 import { EventBus } from './realtime/events';
 import { apiRoutes } from './routes';
@@ -33,6 +33,8 @@ export interface BuildAppOptions extends Omit<AppDeps, 'version' | 'householdNam
   lanUrls?: () => string[];
   /** The exported web app served at `/` (null or a directory without index.html: API only). */
   publicDir?: string | null;
+  /** Extra host names the server answers to (ETAGERE_ALLOWED_HOSTS), besides IPs, localhost, *.local. */
+  allowedHosts?: readonly string[];
   /** false (default, tests), true (pino to stdout), or a logger instance. */
   logger?: boolean | FastifyBaseLogger;
   logLevel?: string;
@@ -55,7 +57,13 @@ const serializers = {
 };
 
 export function buildApp(options: BuildAppOptions): FastifyInstance {
-  const { logger = false, logLevel = 'info', publicDir = null, ...rest } = options;
+  const {
+    logger = false,
+    logLevel = 'info',
+    publicDir = null,
+    allowedHosts = [],
+    ...rest
+  } = options;
   const deps: AppDeps = {
     version: SERVER_VERSION,
     householdName: 'Étagère',
@@ -81,12 +89,18 @@ export function buildApp(options: BuildAppOptions): FastifyInstance {
     // No address (detached socket): refused too, the guard fails closed.
     const ip = typeof request.ip === 'string' ? request.ip : '';
     if (!isLocalAddress(ip)) return reply.code(403).send({ code: 'outside_lan' });
+    // A private source address is not enough: a public website can rebind its own name to
+    // this server (DNS rebinding). Only names of the home network are answered.
+    if (!isAllowedHost(request.headers.host, allowedHosts)) {
+      return reply.code(403).send({ code: 'outside_lan' });
+    }
   });
 
   // The Expo web dev app (`npm run web`, http://localhost:8081) is cross-origin: every method
   // the API uses must pass the preflight, with the profile header.
   app.register(cors, {
-    origin: (origin, callback) => callback(null, origin === undefined || isLocalOrigin(origin)),
+    origin: (origin, callback) =>
+      callback(null, origin === undefined || isLocalOrigin(origin, allowedHosts)),
     methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['content-type', 'x-etagere-profile'],
   });

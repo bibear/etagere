@@ -26,6 +26,7 @@ async function main(): Promise<void> {
     logger: true,
     logLevel: config.logLevel,
     publicDir,
+    allowedHosts: config.allowedHosts,
   });
 
   let withdraw: () => Promise<void> = async () => {};
