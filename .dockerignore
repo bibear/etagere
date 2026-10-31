@@ -1,0 +1,19 @@
+# Build context of docker/Dockerfile (repository root)
+**/node_modules
+**/._*
+**/.DS_Store
+.git
+.githooks
+coverage
+etagere-data
+docker/data
+app/dist
+app/.expo
+app/ios
+app/android
+server/dist
+server/dist-test-*
+server/public
+server/LICENSE
+*.tgz
+docs

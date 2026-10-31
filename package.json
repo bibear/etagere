@@ -26,7 +26,8 @@
     "server": "npm run dev -w etagere-server",
     "app": "npm run start -w @etagere/app",
     "web": "npm run web -w @etagere/app",
-    "build:web": "npm run export:web -w @etagere/app && tsx server/src/pwa/build-cli.ts app/dist server/public"
+    "build:web": "npm run export:web -w @etagere/app && tsx server/src/pwa/build-cli.ts app/dist server/public",
+    "release:docker": "node scripts/release-docker.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

@@ -271,9 +271,15 @@ entry (no barcode) is the add/edit form.
 
 ## Distribution
 
-- **Docker**: multi-stage image (`node:24-alpine`), volume `/data`, port 4848, `docker compose up -d`.
-  `network_mode: host` documented for mDNS. Built and pushed to `ghcr.io/bibear/etagere` by the
-  maintainer from his machine (`npm run release:docker`).
+- **Docker** (`docker/Dockerfile`, context = repository root, `.dockerignore`): multi-stage image
+  (`node:24-alpine`). The build stage runs `npm ci` then `npm pack -w etagere-server` (the same
+  package as npm); the runtime stage installs that tarball with production dependencies only, runs
+  as the `node` user, `ETAGERE_DATA_DIR=/data` (volume), port 4848, `HEALTHCHECK` on `/api/health`,
+  OCI labels linking the image to the repository. `docker/docker-compose.yml` uses a named volume
+  (`etagere-data`) and documents `network_mode: host` for mDNS (Linux). Built for linux/amd64 and
+  linux/arm64 and pushed to `ghcr.io/bibear/etagere:<version>` + `:latest` (not for pre-releases)
+  by the maintainer from his machine (`npm run release:docker`, `scripts/release-docker.js`,
+  `--dry-run` prints the commands).
 - **npm**: `npx etagere-server` (package `etagere-server`, includes the built PWA). `npm pack` runs
   `prepack` = `server/scripts/build.js --pwa`: esbuild bundles `server/src/index.ts` and
   `@etagere/shared` into one CommonJS file `dist/index.js` (the bin, with a node shebang; npm
