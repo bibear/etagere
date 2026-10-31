@@ -37,7 +37,26 @@ app is included and can be added to the home screen (iPhone included).
 
 ## Install the server
 
-### With Docker (recommended for an always-on machine)
+> **Before the first release.** No version is published yet: the Docker image
+> (`ghcr.io/bibear/etagere`), the npm package (`npx etagere-server`) and the Android APK arrive
+> with the first release. Until then, run the server [from source](#from-source-works-today).
+
+### From source (works today)
+
+Requires Node.js 24 or newer and git.
+
+```sh
+git clone https://github.com/bibear/etagere.git
+cd etagere
+npm install
+npm run build:package -w etagere-server   # the server and the web app phones open
+ETAGERE_DATA_DIR="$HOME/etagere-data" npm run start -w etagere-server
+```
+
+With Docker, build the image yourself: `docker build -f docker/Dockerfile -t etagere .`, then use
+`etagere` instead of `ghcr.io/bibear/etagere:latest` in the commands below.
+
+### With Docker (from the first release; recommended for an always-on machine)
 
 ```sh
 curl -O https://raw.githubusercontent.com/bibear/etagere/main/docker/docker-compose.yml
@@ -59,7 +78,7 @@ docker run -d --name etagere --restart unless-stopped \
   -p 4848:4848 -v etagere-data:/data ghcr.io/bibear/etagere:latest
 ```
 
-### With Node.js
+### With Node.js (from the first release)
 
 Requires Node.js 24 or newer.
 
@@ -81,8 +100,9 @@ Docker volume) like any other important file.
 
 ## Install the app
 
-- **Android**: download the APK from the [latest release](https://github.com/bibear/etagere/releases/latest)
-  and open it on the phone (allow installing apps from your browser when asked).
+- **Android** (from the first release): download the APK from the
+  [latest release](https://github.com/bibear/etagere/releases/latest) and open it on the phone
+  (allow installing apps from your browser when asked). Until then, use the web app below.
 - **iPhone, iPad, any phone**: open the server address (`http://192.168.1.20:4848`) in the browser,
   then "Add to Home Screen". Over plain HTTP the browser does not open the live camera, so the web
   app scans by "taking a photo of the barcode".

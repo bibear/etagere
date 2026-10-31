@@ -47,6 +47,22 @@ describe('documentation', () => {
     expect(broken).toEqual([]);
   });
 
+  it('says the published artifacts come with the first release and gives a working path', () => {
+    // Nothing is published before the first release: npx, ghcr.io and the APK would fail.
+    const readme = read('README.md');
+    const sections = readme.split(/^#{2,3} /m);
+    const about = (needle: string) => sections.filter((section) => section.includes(needle));
+
+    for (const needle of ['npx etagere-server', 'docker compose up', 'releases/latest']) {
+      expect(about(needle).length).toBeGreaterThan(0);
+      for (const section of about(needle)) expect(section).toMatch(/first release/);
+    }
+    const fromSource = sections.find((section) => section.startsWith('From source'));
+    expect(fromSource).toContain('git clone https://github.com/bibear/etagere.git');
+    expect(fromSource).toContain('npm run build:package -w etagere-server');
+    expect(fromSource).toContain('npm run start -w etagere-server');
+  });
+
   it('uses the EAS profiles, the image and the package that the build files define', () => {
     const release = read('docs/RELEASE.md');
     const profiles = Object.keys(JSON.parse(read('app/eas.json')).build);

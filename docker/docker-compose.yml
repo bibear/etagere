@@ -1,6 +1,8 @@
 # Étagère server. Start: `docker compose -f docker/docker-compose.yml up -d`
 # (or copy this file anywhere and run `docker compose up -d` next to it).
 # Then open http://<this computer's address>:4848 on a phone of the household.
+# Before the first release the image is not published yet: build it from the repository root
+# (`docker build -f docker/Dockerfile -t etagere .`) and set `image: etagere` below.
 services:
   etagere:
     image: ghcr.io/bibear/etagere:latest
