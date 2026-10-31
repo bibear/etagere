@@ -12,6 +12,7 @@ const PATHS = {
   check: ['M5 12l5 5 9-10'],
   plus: ['M12 5v14M5 12h14'],
   send: ['M5 12h14M13 6l6 6-6 6'],
+  torch: ['M13 2L4 14h7l-1 8 9-12h-7z'],
 } as const;
 
 export type IconName = keyof typeof PATHS;

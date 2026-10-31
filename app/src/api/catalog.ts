@@ -20,3 +20,16 @@ export const updateBook = (
 
 export const deleteBook = (api: ApiClient, id: string): Promise<void> =>
   api.delete(`/api/books/${encodeURIComponent(id)}`);
+
+/** The `BookInput` of an Open Library candidate (only the contract's fields: the API is strict). */
+export const inputFromCandidate = (candidate: BookCandidate): BookInput => ({
+  isbn13: candidate.isbn13,
+  title: candidate.title,
+  authors: candidate.authors,
+  genres: candidate.genres ?? [],
+  publisher: candidate.publisher ?? null,
+  year: candidate.year ?? null,
+  pages: candidate.pages ?? null,
+  description: candidate.description ?? null,
+  coverSourceUrl: candidate.coverSourceUrl,
+});

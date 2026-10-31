@@ -28,7 +28,20 @@
       "themeColor": "#1F6B4A",
       "backgroundColor": "#F3F4F1"
     },
-    "plugins": ["expo-router", "expo-localization", "expo-font"],
+    "plugins": [
+      "expo-router",
+      "expo-localization",
+      "expo-font",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Étagère uses the camera to read the barcode on the back of your books.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "barcodeScannerEnabled": true
+        }
+      ]
+    ],
     "experiments": {
       "typedRoutes": false
     }
