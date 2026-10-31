@@ -146,7 +146,8 @@ the app with `buildTestApp()` (`server/src/__tests__/support/test-app.ts`): in-m
 ### Books
 - `GET /api/books?query=&filter=all|available|reading|lent|unread_by_me&sort=added|title|author` →
   `{ books: BookSummary[], counts: { all, available, reading, lent, unreadByMe } }`.
-  `query` matches title, authors, ISBN (case and accent insensitive).
+  `query` matches title, authors, ISBN and the back-cover text (`description`), case and accent
+  insensitive; results keep the requested sort (no relevance ranking).
 - `GET /api/books/:id` → `BookDetail`
   Counts cover the books matching `query` (whatever the filter). Sorts: `added` newest first, `title` / `author`
   (first author) alphabetical, ignoring case and accents. Without a profile header `readByMe` is false.
@@ -154,6 +155,11 @@ the app with `buildTestApp()` (`server/src/__tests__/support/test-app.ts`): in-m
   `source` is `lookup` when the book has an ISBN, `manual` otherwise.
 - `PATCH /api/books/:id` body partial `BookInput` → `BookDetail` (`coverSourceUrl`: a URL replaces the cover, `null` removes it)
 - `DELETE /api/books/:id` → `204`
+- `POST /api/books/:id/enrich` → `200 BookDetail`: re-runs the ISBN lookup and fills ONLY what the book
+  lacks (cover downloaded when it has none, description, publisher, year, pages, genres when empty);
+  never overwrites what the household entered (title and authors are never touched). Publishes
+  `books.changed` when something was filled. Book without ISBN → `409 no_isbn`; lookup failure →
+  `502 upstream_unavailable`; no source knows the ISBN → `200` with the book unchanged.
 - `GET /api/lookup/:isbn` → `200 BookCandidate` | `400 invalid_isbn` | `404 not_found` |
   `409 already_in_library` | `502 upstream_unavailable`. Accepts ISBN-10 or ISBN-13 with or without
   hyphens; normalised to ISBN-13. Two sources queried in parallel, each within the same 5 s deadline

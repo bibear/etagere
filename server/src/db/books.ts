@@ -104,7 +104,8 @@ export function findSummary(db: Database, id: string, meId: string | null): Book
 }
 
 /**
- * Books whose title, authors or ISBN contain `query` (case and accent insensitive, D-18).
+ * Books whose title, authors, ISBN or back-cover text (`description`) contain `query` (case and
+ * accent insensitive, D-18).
  * An empty query matches everything.
  */
 export function searchSummaries(db: Database, query: string, meId: string | null): BookSummary[] {
@@ -114,6 +115,7 @@ export function searchSummaries(db: Database, query: string, meId: string | null
     db,
     meId,
     `(instr(fold(b.title), fold(:q)) > 0 OR instr(fold(b.authors), fold(:q)) > 0
+      OR instr(fold(coalesce(b.description, '')), fold(:q)) > 0
       OR (:isbn <> '' AND instr(coalesce(b.isbn13, ''), :isbn) > 0))`,
     { q: query, isbn: /^\d+$/.test(isbn) ? isbn : '' },
   );

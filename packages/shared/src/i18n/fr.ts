@@ -279,6 +279,7 @@ export const fr = {
     not_reader: 'Seule la personne qui le lit peut faire ça.',
     not_lent: "Ce livre n'est pas prêté.",
     not_author: "Seul l'auteur peut modifier ce commentaire.",
+    no_isbn: "Ce livre n'a pas d'ISBN : impossible de chercher sa fiche en ligne.",
     internal_error: 'Le serveur a rencontré un problème.',
     network: 'Impossible de joindre le serveur.',
   },

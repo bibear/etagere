@@ -279,6 +279,7 @@ export const en: Dictionary = {
     not_reader: 'Only the current reader can do this.',
     not_lent: 'This book is not lent.',
     not_author: 'Only the author can change this comment.',
+    no_isbn: 'This book has no ISBN: its details cannot be looked up online.',
     internal_error: 'The server ran into a problem.',
     network: 'Cannot reach the server.',
   },

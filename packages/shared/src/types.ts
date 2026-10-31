@@ -169,6 +169,7 @@ export const ERROR_CODES = [
   'not_reader',
   'not_lent',
   'not_author',
+  'no_isbn',
   'internal_error',
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];

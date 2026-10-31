@@ -1,8 +1,10 @@
 import { randomUUID } from 'node:crypto';
 
 import {
+  type BookCandidate,
   type BookCounts,
   type BookDetail,
+  type BookPatchParsed,
   type BookSummary,
   type BooksQueryParsed,
   type BooksResponse,
@@ -14,7 +16,9 @@ import {
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 
+import { lookupBook } from '../book-lookup';
 import {
+  type BookRow,
   deleteBook,
   findBookIdByIsbn,
   findBookRow,
@@ -25,7 +29,7 @@ import {
   searchSummaries,
   updateBook,
 } from '../db/books';
-import type { Database } from '../db/database';
+import { type Database, parseStringArray } from '../db/database';
 import { HttpError } from '../http/errors';
 import { profileIdOf, requireProfile } from '../http/profile';
 import { parseInput } from '../http/validation';
@@ -60,12 +64,26 @@ const SORTS: Record<BooksQueryParsed['sort'], (a: BookSummary, b: BookSummary) =
   author: (a, b) => collator.compare(a.authors[0] ?? '', b.authors[0] ?? '') || byTitle(a, b),
 };
 
+/** The looked-up fields a book lacks (empty in the row, known by the candidate); never the others. */
+export function missingFields(row: BookRow, candidate: BookCandidate): BookPatchParsed {
+  const patch: BookPatchParsed = {};
+  if (row.description === null && candidate.description) patch.description = candidate.description;
+  if (row.publisher === null && candidate.publisher) patch.publisher = candidate.publisher;
+  if (row.year === null && candidate.year !== null && candidate.year !== undefined)
+    patch.year = candidate.year;
+  if (row.pages === null && candidate.pages !== null && candidate.pages !== undefined)
+    patch.pages = candidate.pages;
+  const genres = candidate.genres ?? [];
+  if (parseStringArray(row.genres).length === 0 && genres.length > 0) patch.genres = genres;
+  return patch;
+}
+
 /** `409 already_in_library` with the existing book. */
 export function alreadyInLibrary(db: Database, bookId: string, meId: string | null): HttpError {
   return new HttpError(409, 'already_in_library', { book: findSummary(db, bookId, meId) });
 }
 
-// GET/POST /api/books, GET/PATCH/DELETE /api/books/:id
+// GET/POST /api/books, GET/PATCH/DELETE /api/books/:id, POST /api/books/:id/enrich
 export async function bookRoutes(app: FastifyInstance): Promise<void> {
   const { deps } = app;
   const { db } = deps;
@@ -143,6 +161,31 @@ export async function bookRoutes(app: FastifyInstance): Promise<void> {
       throw error;
     }
     if (cover === null && row.cover !== null) await app.covers.remove(row.cover);
+    app.events.publish({ type: 'books.changed', id });
+    return detailOr404(id, me.id);
+  });
+
+  // Fills only what the book lacks from the ISBN lookup: what the household typed stays.
+  app.post('/books/:id/enrich', async (request): Promise<BookDetail> => {
+    const me = requireProfile(request);
+    const { id } = parseInput(idParams, request.params);
+    const row = findBookRow(db, id);
+    if (!row) throw new HttpError(404, 'not_found');
+    if (row.isbn13 === null) throw new HttpError(409, 'no_isbn');
+
+    const result = await lookupBook(row.isbn13, { fetch: deps.fetch });
+    if (result.kind === 'unavailable') throw new HttpError(502, 'upstream_unavailable');
+    if (result.kind === 'not_found') return detailOr404(id, me.id); // nothing more to fill
+
+    const patch = missingFields(row, result.candidate);
+    const cover =
+      row.cover === null ? await app.covers.download(id, result.candidate.coverSourceUrl) : null;
+    if (Object.keys(patch).length === 0 && cover === null) return detailOr404(id, me.id);
+    if (!findBookRow(db, id)) {
+      await app.covers.remove(cover); // deleted while the lookup ran
+      throw new HttpError(404, 'not_found');
+    }
+    updateBook(db, id, patch, deps.now().toISOString(), cover ?? undefined);
     app.events.publish({ type: 'books.changed', id });
     return detailOr404(id, me.id);
   });

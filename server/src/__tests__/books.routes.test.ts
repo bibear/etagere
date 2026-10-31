@@ -142,6 +142,26 @@ describe('books API', () => {
       expect((await list('?query=e')).counts.all).toBe(4);
     });
 
+    it('also searches the back-cover text, keeping the sort', async () => {
+      await add({
+        title: 'Le Désert des Tartares',
+        authors: ['Dino Buzzati'],
+        description: 'Le lieutenant Drogo attend, dans une forteresse aux confins du désert…',
+      });
+      await add({
+        title: 'Dune',
+        authors: [],
+        isbn13: null,
+        description: 'Sur Arrakis, planète des sables et du désert, Paul Atréides…',
+      });
+      expect(titles((await list('?query=FORTERESSE')).books)).toEqual(['Le Désert des Tartares']);
+      expect(titles((await list('?query=atreides')).books)).toEqual(['Dune']);
+      expect(titles((await list('?query=desert&sort=title')).books)).toEqual([
+        'Dune',
+        'Le Désert des Tartares',
+      ]);
+    });
+
     it('sorts by title and by first author', async () => {
       expect(titles((await list('?sort=title')).books)).toEqual([
         'Dune',
