@@ -4,6 +4,7 @@ import Fastify, { type FastifyBaseLogger, type FastifyInstance } from 'fastify';
 import type { Database } from './db/database';
 import { installErrorHandling } from './http/errors';
 import { isLocalAddress, isLocalOrigin } from './lan-only';
+import { EventBus } from './realtime/events';
 import { apiRoutes } from './routes';
 import { SERVER_VERSION } from './version';
 
@@ -34,6 +35,8 @@ export interface BuildAppOptions extends Omit<AppDeps, 'version' | 'householdNam
 declare module 'fastify' {
   interface FastifyInstance {
     deps: AppDeps;
+    /** Realtime events published after mutations (`app.events.publish(...)`). */
+    events: EventBus;
   }
 }
 
@@ -57,6 +60,7 @@ export function buildApp(options: BuildAppOptions): FastifyInstance {
       : Fastify({ logger: logger && { level: logLevel, serializers } });
 
   app.decorate('deps', deps);
+  app.decorate('events', new EventBus());
   installErrorHandling(app);
 
   // Only the home network may talk to the server (D-03).

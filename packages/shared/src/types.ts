@@ -160,6 +160,7 @@ export const ERROR_CODES = [
   'already_in_library',
   'upstream_unavailable',
   'unknown_profile',
+  'profile_mismatch',
   'outside_lan',
   'unavailable',
   'not_author',

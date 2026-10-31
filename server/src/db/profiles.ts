@@ -36,3 +36,39 @@ export function countActiveProfiles(db: Database): number {
   const row = db.prepare('SELECT count(*) AS n FROM profiles WHERE removed_at IS NULL').get();
   return Number(row?.n ?? 0);
 }
+
+/** Active profiles, oldest first (the household order). */
+export function listActiveProfiles(db: Database): ProfileRow[] {
+  return db
+    .prepare('SELECT * FROM profiles WHERE removed_at IS NULL ORDER BY created_at, name')
+    .all() as unknown as ProfileRow[];
+}
+
+/** Any profile, removed or not. */
+export function findProfile(db: Database, id: string): ProfileRow | undefined {
+  return db.prepare('SELECT * FROM profiles WHERE id = ?').get(id) as ProfileRow | undefined;
+}
+
+/**
+ * Creates the profile, or updates its name and color. A removed profile written again is
+ * restored (same device coming back).
+ */
+export function upsertProfile(
+  db: Database,
+  input: { id: string; name: string; color: string },
+  at: string,
+): ProfileRow {
+  db.prepare(
+    `INSERT INTO profiles (id, name, color, created_at, updated_at, removed_at)
+     VALUES (?, ?, ?, ?, ?, NULL)
+     ON CONFLICT (id) DO UPDATE SET
+       name = excluded.name, color = excluded.color,
+       updated_at = excluded.updated_at, removed_at = NULL`,
+  ).run(input.id, input.name, input.color, at, at);
+  return findProfile(db, input.id) as ProfileRow;
+}
+
+/** Soft delete: the history keeps the name and color. */
+export function removeProfile(db: Database, id: string, at: string): void {
+  db.prepare('UPDATE profiles SET removed_at = ?, updated_at = ? WHERE id = ?').run(at, at, id);
+}

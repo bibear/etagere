@@ -124,8 +124,10 @@ the app with `buildTestApp()` (`server/src/__tests__/support/test-app.ts`): in-m
 
 ### Profiles
 - `GET /api/profiles` → `{ profiles: Profile[] }` (not removed)
-- `PUT /api/profiles/:id` body `{ name, color }` → `200 Profile` (create or update; header must match `:id` or be absent on creation)
-- `DELETE /api/profiles/:id` → `204` (soft delete)
+- `PUT /api/profiles/:id` body `{ name, color }` → `200 Profile` (create or update; header must match `:id` or be absent on creation).
+  Header for another profile → `403 profile_mismatch`; no header on an existing profile → `401 unknown_profile`.
+  Writing a removed profile again (with its own header) restores it.
+- `DELETE /api/profiles/:id` → `204` (soft delete; any known profile may remove a member; their current reading is put down). Unknown or already removed → `404 not_found`
 
 `Profile = { id, name, color, createdAt }`
 
