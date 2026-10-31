@@ -1,0 +1,7 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Étagère",
+    "NSCameraUsageDescription": "Étagère uses the camera to read the barcode on the back of your books and the server QR code.",
+    "NSLocalNetworkUsageDescription": "Étagère connects to the library server on your home Wi-Fi."
+  }
+}

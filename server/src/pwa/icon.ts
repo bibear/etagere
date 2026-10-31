@@ -45,14 +45,19 @@ const chunk = (type: string, data: Buffer): Buffer => {
   return Buffer.concat([length, body, crc]);
 };
 
-/** The icon as an RGB PNG of `size` × `size` pixels. */
-export function iconPng(size: number): Buffer {
+/**
+ * The icon as an RGB PNG of `size` × `size` pixels. `scale` (0..1] shrinks the drawing around the
+ * centre on the same background (Android adaptive icons mask more than the maskable safe zone).
+ */
+export function iconPng(size: number, scale = 1): Buffer {
   if (!Number.isInteger(size) || size < 16 || size > 2048) throw new Error(`bad icon size ${size}`);
+  if (!(scale > 0 && scale <= 1)) throw new Error(`bad icon scale ${scale}`);
+  const at = (fraction: number) => Math.round((0.5 + (fraction - 0.5) * scale) * size);
   const shapes = SHAPES.map(([x, y, w, h, color]) => ({
-    x0: Math.round(x * size),
-    y0: Math.round(y * size),
-    x1: Math.round((x + w) * size),
-    y1: Math.round((y + h) * size),
+    x0: at(x),
+    y0: at(y),
+    x1: at(x + w),
+    y1: at(y + h),
     rgb: hex(color),
   }));
   const background = hex(ICON_BACKGROUND);

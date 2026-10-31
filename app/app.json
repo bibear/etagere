@@ -5,20 +5,29 @@
     "scheme": "etagere",
     "version": "0.1.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "backgroundColor": "#F3F4F1",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.etagere.app",
       "infoPlist": {
-        "NSAppTransportSecurity": { "NSAllowsLocalNetworking": true },
-        "NSLocalNetworkUsageDescription": "Étagère connects to the library server on your home Wi-Fi."
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        },
+        "NSLocalNetworkUsageDescription": "Étagère connects to the library server on your home Wi-Fi.",
+        "CFBundleAllowMixedLocalizations": true,
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
       "package": "org.etagere.app",
-      "usesCleartextTraffic": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1F6B4A"
+      },
+      "blockedPermissions": ["android.permission.RECORD_AUDIO"]
     },
     "web": {
       "bundler": "metro",
@@ -35,15 +44,40 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Étagère uses the camera to read the barcode on the back of your books.",
+          "cameraPermission": "Étagère uses the camera to read the barcode on the back of your books and the server QR code.",
           "microphonePermission": false,
           "recordAudioAndroid": false,
           "barcodeScannerEnabled": true
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 120,
+          "resizeMode": "contain",
+          "backgroundColor": "#F3F4F1",
+          "dark": {
+            "image": "./assets/splash-icon.png",
+            "backgroundColor": "#0F1513"
+          }
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
         }
       ]
     ],
     "experiments": {
       "typedRoutes": false
+    },
+    "locales": {
+      "fr": "./locales/fr.json",
+      "en": "./locales/en.json"
     }
   }
 }

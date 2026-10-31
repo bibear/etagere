@@ -10,7 +10,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "export:web": "expo export -p web",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "icons": "tsx scripts/generate-icons.ts"
   },
   "dependencies": {
     "@etagere/shared": "*",
@@ -22,6 +23,7 @@
     "@zxing/browser": "^0.2.1",
     "@zxing/library": "^0.23.0",
     "expo": "~58.0.21",
+    "expo-build-properties": "~58.0.12",
     "expo-camera": "~58.0.12",
     "expo-constants": "~58.0.14",
     "expo-crypto": "~58.0.7",

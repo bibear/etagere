@@ -291,3 +291,11 @@ entry (no barcode) is the add/edit form.
 - **Android**: APK attached to GitHub Releases, built with EAS (`eas build -p android --profile preview`).
 - **iOS**: PWA ("Add to Home Screen") until store accounts exist. `eas.json`, app icons, splash and
   store listing texts (`docs/store/`) are ready for later submission.
+- Native build settings (`app/app.json`, `app/eas.json`): profiles `preview` (internal APK, iOS
+  simulator) and `production` (Android app bundle, store builds, `autoIncrement` with the remote
+  version source). Cleartext HTTP on Android through `expo-build-properties`
+  (`android.usesCleartextTraffic`), `NSAllowsLocalNetworking` + `NSLocalNetworkUsageDescription` on
+  iOS. Permission texts localised in `app/locales/{fr,en}.json` (camera, local network, display
+  name); microphone blocked. Icons and splash image (`app/assets/`) are generated from the PWA icon
+  drawing (`server/src/pwa/icon.ts`) by `npm run icons -w @etagere/app`; a test fails when they
+  are out of date. Splash on the theme background (light `#F3F4F1`, dark `#0F1513`).
