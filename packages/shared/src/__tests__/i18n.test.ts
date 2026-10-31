@@ -1,4 +1,5 @@
 import { en, fr, pickLocale, translate } from '../i18n';
+import { ERROR_CODES } from '../types';
 
 const keysOf = (node: object, prefix = ''): string[] =>
   Object.entries(node).flatMap(([key, value]) =>
@@ -6,6 +7,13 @@ const keysOf = (node: object, prefix = ''): string[] =>
   );
 
 describe('dictionaries', () => {
+  it('translates every error code of the API in both languages', () => {
+    for (const code of ERROR_CODES) {
+      expect([code, code in en.errors, code in fr.errors]).toEqual([code, true, true]);
+    }
+    expect(translate('fr', 'errors.not_lent')).toBe("Ce livre n'est pas prêté.");
+  });
+
   it('FR and EN have exactly the same keys', () => {
     expect(keysOf(en).sort()).toEqual(keysOf(fr).sort());
   });

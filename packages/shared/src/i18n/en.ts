@@ -276,6 +276,7 @@ export const en: Dictionary = {
     outside_lan: 'The server only answers on the home Wi-Fi.',
     unavailable: 'This book is not available.',
     not_reader: 'Only the current reader can do this.',
+    not_lent: 'This book is not lent.',
     not_author: 'Only the author can change this comment.',
     internal_error: 'The server ran into a problem.',
     network: 'Cannot reach the server.',

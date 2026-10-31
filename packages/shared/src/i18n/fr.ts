@@ -276,6 +276,7 @@ export const fr = {
     outside_lan: 'Le serveur ne répond que sur le Wi-Fi de la maison.',
     unavailable: "Ce livre n'est pas disponible.",
     not_reader: 'Seule la personne qui le lit peut faire ça.',
+    not_lent: "Ce livre n'est pas prêté.",
     not_author: "Seul l'auteur peut modifier ce commentaire.",
     internal_error: 'Le serveur a rencontré un problème.',
     network: 'Impossible de joindre le serveur.',

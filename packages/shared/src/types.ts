@@ -167,6 +167,7 @@ export const ERROR_CODES = [
   'outside_lan',
   'unavailable',
   'not_reader',
+  'not_lent',
   'not_author',
   'internal_error',
 ] as const;
