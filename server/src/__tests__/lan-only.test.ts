@@ -96,4 +96,27 @@ describe('LAN-only guard', () => {
     });
     expect(response.headers['access-control-allow-origin']).toBe(allowed ? origin : undefined);
   });
+
+  it.each(['PUT', 'PATCH', 'DELETE'])(
+    'CORS: the web dev app may send %s with the profile header',
+    async (method) => {
+      const response = await t.app.inject({
+        method: 'OPTIONS',
+        url: '/api/profiles/3b241101-e2bb-4255-8caf-4136c566a962',
+        headers: {
+          origin: 'http://localhost:8081',
+          'access-control-request-method': method,
+          'access-control-request-headers': 'content-type,x-etagere-profile',
+        },
+      });
+      expect(response.statusCode).toBe(204);
+      expect(response.headers['access-control-allow-origin']).toBe('http://localhost:8081');
+      expect(String(response.headers['access-control-allow-methods']).split(/,\s*/)).toContain(
+        method,
+      );
+      const headers = String(response.headers['access-control-allow-headers']).toLowerCase();
+      expect(headers).toContain('x-etagere-profile');
+      expect(headers).toContain('content-type');
+    },
+  );
 });

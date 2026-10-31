@@ -83,8 +83,12 @@ export function buildApp(options: BuildAppOptions): FastifyInstance {
     if (!isLocalAddress(ip)) return reply.code(403).send({ code: 'outside_lan' });
   });
 
+  // The Expo web dev app (`npm run web`, http://localhost:8081) is cross-origin: every method
+  // the API uses must pass the preflight, with the profile header.
   app.register(cors, {
     origin: (origin, callback) => callback(null, origin === undefined || isLocalOrigin(origin)),
+    methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['content-type', 'x-etagere-profile'],
   });
 
   // WebSocket support at the root (realtime events, `app.injectWS` in tests).
