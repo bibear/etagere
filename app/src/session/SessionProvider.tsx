@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { randomUUID } from 'expo-crypto';
 import {
   type ReactNode,
   createContext,
@@ -50,8 +49,7 @@ export interface Session {
   forgetProfile(): Promise<void>;
 }
 
-/** A fresh UUID v4 for a new profile. */
-export const newProfileId = (): string => randomUUID();
+export { newProfileId } from './profileId';
 
 const platformDefaultUrl = (): string =>
   defaultServerUrl({

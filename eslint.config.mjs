@@ -35,6 +35,27 @@ export default tseslint.config(
     rules: {
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'error',
+      // The PWA runs over plain HTTP on the home network, where browsers hide secure-context APIs (D-38).
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'expo-crypto',
+              importNames: ['randomUUID'],
+              message: 'Not available over plain HTTP: use newProfileId() / uuidV4().',
+            },
+          ],
+        },
+      ],
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'crypto',
+          property: 'randomUUID',
+          message: 'Not available over plain HTTP: use uuidV4().',
+        },
+      ],
     },
   },
   {

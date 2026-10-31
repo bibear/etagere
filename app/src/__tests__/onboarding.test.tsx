@@ -18,8 +18,8 @@ import { booksResponse } from '../test/fixtures';
 import { TEST_PROFILE } from '../test/render';
 
 const NEW_ID = '9d3f2c1b-7a6e-4f5d-8c4b-3a2f1e0d9c8b';
-jest.mock('expo-crypto', () => ({
-  randomUUID: jest.fn(() => '9d3f2c1b-7a6e-4f5d-8c4b-3a2f1e0d9c8b'),
+jest.mock('../session/profileId', () => ({
+  newProfileId: jest.fn(() => '9d3f2c1b-7a6e-4f5d-8c4b-3a2f1e0d9c8b'),
 }));
 
 const SERVER = 'http://etagere.local:4848';
@@ -156,8 +156,8 @@ describe('first launch', () => {
   });
 
   it('retries with the same profile id, so a lost answer never creates a second member', async () => {
-    const { randomUUID } = jest.requireMock<{ randomUUID: jest.Mock }>('expo-crypto');
-    randomUUID
+    const { newProfileId } = jest.requireMock<{ newProfileId: jest.Mock }>('../session/profileId');
+    newProfileId
       .mockReturnValueOnce(NEW_ID)
       .mockReturnValueOnce('0b5c4d3e-2f1a-4b9c-8d7e-6f5a4b3c2d1e');
     let attempts = 0;
