@@ -1,0 +1,3 @@
+#!/bin/sh
+# Local quality gate (there is no hosted CI): lint + typecheck + tests before every push.
+exec npm run check

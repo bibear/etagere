@@ -1,0 +1,15 @@
+{
+  "name": "etagere-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Étagère home server: household book library API over the home Wi-Fi.",
+  "license": "AGPL-3.0-only",
+  "main": "src/app.ts",
+  "types": "src/app.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@etagere/shared": "*"
+  }
+}

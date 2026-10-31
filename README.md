@@ -8,3 +8,15 @@ who is reading what, and what the household thinks of them. No account, no cloud
 > [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 Free and open source under the [AGPL-3.0](LICENSE).
+
+## Development
+
+Requires Node.js 24 or newer.
+
+```sh
+npm install        # also enables the versioned git hooks (.githooks/pre-push)
+npm run check      # lint + typecheck + all tests: the quality gate, run before every push
+```
+
+Workspaces: `packages/shared` (types, validation, i18n, tokens), `server` (Fastify API),
+`app` (Expo app, iOS / Android / PWA).

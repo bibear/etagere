@@ -1,0 +1,16 @@
+node_modules/
+coverage/
+dist/
+build/
+*.log
+.env
+.env.*
+.DS_Store
+._*
+etagere-data/
+server/public/
+app/.expo/
+app/web-build/
+app/ios/
+app/android/
+*.tsbuildinfo

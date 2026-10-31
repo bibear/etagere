@@ -1,0 +1,12 @@
+node_modules/
+coverage/
+dist/
+build/
+package-lock.json
+._*
+docs/design/
+etagere-data/
+server/public/
+app/.expo/
+LICENSE
+*.md
