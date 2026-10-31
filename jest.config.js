@@ -23,5 +23,13 @@ module.exports = {
       modulePathIgnorePatterns: ['/\\._'],
       transform: tsJest,
     },
+    {
+      displayName: 'app',
+      rootDir: '<rootDir>/app',
+      preset: 'jest-expo',
+      testPathIgnorePatterns,
+      modulePathIgnorePatterns: ['/\\._', '<rootDir>/dist/'],
+      setupFiles: ['<rootDir>/jest.setup.ts'],
+    },
   ],
 };

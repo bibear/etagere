@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Étagère",
+    "slug": "etagere",
+    "scheme": "etagere",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#F3F4F1",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "org.etagere.app",
+      "infoPlist": {
+        "NSAppTransportSecurity": { "NSAllowsLocalNetworking": true },
+        "NSLocalNetworkUsageDescription": "Étagère connects to the library server on your home Wi-Fi."
+      }
+    },
+    "android": {
+      "package": "org.etagere.app",
+      "usesCleartextTraffic": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "name": "Étagère",
+      "shortName": "Étagère",
+      "themeColor": "#1F6B4A",
+      "backgroundColor": "#F3F4F1"
+    },
+    "plugins": ["expo-router", "expo-localization", "expo-font"],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}

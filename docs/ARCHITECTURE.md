@@ -56,6 +56,13 @@ Navigation: bottom tab bar with 4 tabs — **Library** (Biblio), **Readings** (L
 (Scanner), **For you** (Pour toi). Book detail, add/edit book, profile settings and server settings
 are stack screens. First launch (onboarding) shows before the tabs while no profile exists.
 
+App code layout: routes in `app/app/` (expo-router; tabs in `app/app/(tabs)/`: `index` Library,
+`readings`, `scan`, `for-you`), components in `app/src/components/` (`Cover`, `Icon`, `Screen`,
+`AppProviders`), `useTheme()` (`app/src/theme`), `useI18n()` (`app/src/i18n`), `useSession()` /
+`useApi()` (`app/src/session`: device profile, server address, `ApiClient` sending
+`X-Etagere-Profile`; feature API helpers go next to `app/src/api/client.ts`). Component tests use
+`renderWithProviders()` and `fakeFetch()` from `app/src/test/`.
+
 ## i18n
 
 French and English. Dictionaries live in `packages/shared/src/i18n/{fr,en}.ts` with the same keys
