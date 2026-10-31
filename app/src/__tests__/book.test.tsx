@@ -187,7 +187,8 @@ describe('BookScreen — household reviews', () => {
     await render;
 
     expect(await screen.findByRole('header', { name: 'Avis du foyer · 2' })).toBeTruthy();
-    const theirs = screen.getByTestId(`comment-${THEIRS.id}`);
+    // The header count comes from the book; the reviews arrive with their own query.
+    const theirs = await screen.findByTestId(`comment-${THEIRS.id}`);
     expect(within(theirs).getByText('Camille')).toBeTruthy();
     expect(within(theirs).getByText('Le début est dense, accrochez-vous.')).toBeTruthy();
     expect(within(theirs).getByText('12 sept. 2025')).toBeTruthy();
