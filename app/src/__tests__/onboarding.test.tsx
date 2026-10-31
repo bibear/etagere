@@ -18,7 +18,9 @@ import { booksResponse } from '../test/fixtures';
 import { TEST_PROFILE } from '../test/render';
 
 const NEW_ID = '9d3f2c1b-7a6e-4f5d-8c4b-3a2f1e0d9c8b';
-jest.mock('expo-crypto', () => ({ randomUUID: () => '9d3f2c1b-7a6e-4f5d-8c4b-3a2f1e0d9c8b' }));
+jest.mock('expo-crypto', () => ({
+  randomUUID: jest.fn(() => '9d3f2c1b-7a6e-4f5d-8c4b-3a2f1e0d9c8b'),
+}));
 
 const SERVER = 'http://etagere.local:4848';
 const SERVER_INFO = { version: '0.2.0', bookCount: 128, profileCount: 4, urls: [SERVER] };
@@ -151,6 +153,35 @@ describe('first launch', () => {
       await screen.findByText('Le serveur ne répond que sur le Wi-Fi de la maison.'),
     ).toBeTruthy();
     expect(screen).toHavePathname('/onboarding');
+  });
+
+  it('retries with the same profile id, so a lost answer never creates a second member', async () => {
+    const { randomUUID } = jest.requireMock<{ randomUUID: jest.Mock }>('expo-crypto');
+    randomUUID
+      .mockReturnValueOnce(NEW_ID)
+      .mockReturnValueOnce('0b5c4d3e-2f1a-4b9c-8d7e-6f5a4b3c2d1e');
+    let attempts = 0;
+    const api = fakeFetch({
+      'GET /api/server-info': { body: SERVER_INFO },
+      // The first answer is lost (the server may have created the profile anyway).
+      [`PUT /api/profiles/${NEW_ID}`]: (body) =>
+        ++attempts === 1
+          ? { status: 500, body: { code: 'internal_error' } }
+          : { body: { id: NEW_ID, ...(body as object), createdAt: '2026-10-31T10:00:00.000Z' } },
+      ...libraryRoutes,
+    });
+    await renderApp(api);
+
+    await fireEvent.changeText(await screen.findByLabelText('Ton prénom'), 'Inès');
+    const enter = screen.getByRole('button', { name: 'Entrer dans la bibliothèque' });
+    await fireEvent.press(enter);
+    await waitFor(() => expect(attempts).toBe(1));
+    await waitFor(() => expect(enter).toBeEnabled());
+    await fireEvent.press(enter);
+
+    expect(await screen.findByRole('header', { name: 'La bibliothèque' })).toBeTruthy();
+    const puts = api.calls.filter((call) => call.method === 'PUT').map((call) => call.path);
+    expect(puts).toEqual([`/api/profiles/${NEW_ID}`, `/api/profiles/${NEW_ID}`]);
   });
 
   it('opens the library directly when a profile exists', async () => {

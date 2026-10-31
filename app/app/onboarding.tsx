@@ -124,11 +124,13 @@ export default function OnboardingScreen() {
   const { api, saveProfile } = useSession();
   const [name, setName] = useState('');
   const [color, setColor] = useState<string>(PROFILE_COLORS[0].value);
+  // One id per screen: a retry after a lost answer re-sends the same idempotent PUT instead of
+  // creating a second member with the same name.
+  const [id] = useState(newProfileId);
 
   const enter = useMutation({
     mutationFn: async () => {
       const input = profileInputSchema.parse({ name, color });
-      const id = newProfileId();
       const profile = await putProfile(api, id, input);
       await saveProfile({ id: profile.id, name: profile.name, color: profile.color });
     },
