@@ -6,6 +6,8 @@ export interface Config {
   dataDir: string;
   householdName: string;
   logLevel: string;
+  /** Announce `_etagere._tcp` / `etagere.local` over mDNS (`ETAGERE_MDNS=0` turns it off). */
+  mdns: boolean;
 }
 
 export const DEFAULT_PORT = 4848;
@@ -22,5 +24,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env, cwd = process.c
     dataDir: resolve(cwd, env.ETAGERE_DATA_DIR || 'etagere-data'),
     householdName: env.ETAGERE_HOUSEHOLD_NAME?.trim() || 'Étagère',
     logLevel: env.LOG_LEVEL || 'info',
+    mdns: !['0', 'false', 'off', 'no'].includes((env.ETAGERE_MDNS ?? '').trim().toLowerCase()),
   };
 }

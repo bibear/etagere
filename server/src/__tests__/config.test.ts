@@ -9,6 +9,7 @@ describe('loadConfig', () => {
       dataDir: '/home/me/etagere-data',
       householdName: 'Étagère',
       logLevel: 'info',
+      mdns: true,
     });
   });
 
@@ -32,6 +33,10 @@ describe('loadConfig', () => {
 
   it('resolves a relative data dir against the working directory', () => {
     expect(loadConfig({ ETAGERE_DATA_DIR: 'lib' }, '/srv').dataDir).toBe('/srv/lib');
+  });
+
+  it.each(['0', 'false', 'OFF'])('turns mDNS off with ETAGERE_MDNS=%s', (value) => {
+    expect(loadConfig({ ETAGERE_MDNS: value }).mdns).toBe(false);
   });
 
   it.each(['abc', '0', '65536', '1.5'])('rejects PORT=%s', (port) => {

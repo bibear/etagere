@@ -225,11 +225,18 @@ service worker caching the shell. Opening `http://<server>:4848` on a phone give
 
 ## Server discovery and pairing
 
-- Default port `4848` (`PORT` env). On start the server logs its LAN URLs and prints a QR code
-  (terminal) of the main URL. It announces `_etagere._tcp` over mDNS (`bonjour-service`) with the
-  host name `etagere.local` when possible.
-- The app (native) tries, in order: the saved address; `http://etagere.local:4848`; then shows the
-  server settings screen: scan the server QR code or type the address. The PWA uses its own origin.
+- Default port `4848` (`PORT` env). On start the server prints (plain stdout, not the JSON log) its
+  LAN URLs, `http://etagere.local:<port>` when mDNS is on, and a terminal QR code (`qrcode`) of the
+  main URL: the first private IPv4 URL, e.g. `http://192.168.1.20:4848` (the same code opens the PWA
+  from a phone camera). It announces `_etagere._tcp` over mDNS (`bonjour-service`, `server/src/discovery.ts`)
+  named after the household, host name `etagere.local`, TXT `{ version, path: "/api" }`. Best effort:
+  a failure (port 5353 busy, no multicast, Docker bridge network) only logs a warning.
+  `ETAGERE_MDNS=0` turns the announce off.
+- The app (native) tries, in order: the saved address; `http://etagere.local:4848` (`discoverServer`
+  in `app/src/pairing/`, run by the onboarding card; when only the default answers, the saved
+  address is forgotten); then the onboarding offers the server settings screen: scan the server QR
+  code (native only, `expo-camera` QR mode; any `http(s)://` payload, normalised, saved once its
+  `/api/health` answers) or type the address. The PWA uses its own origin (no scan button).
 - The onboarding card ("Library found · etagere.local · 128 books · 4 members") comes from `/api/server-info`.
 
 ## Offline

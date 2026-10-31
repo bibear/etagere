@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { buildApp } from './app';
 import { loadConfig } from './config';
 import { DATABASE_FILE, openDatabase } from './db/database';
+import { announce, pairingBanner } from './discovery';
 import { lanUrls } from './network';
 
 // Entry point: `npm run server` (dev, tsx watch) or the published `etagere-server` bin.
@@ -20,7 +21,9 @@ async function main(): Promise<void> {
     logLevel: config.logLevel,
   });
 
+  let withdraw: () => Promise<void> = async () => {};
   const shutdown = async () => {
+    await withdraw();
     await app.close();
     db.close();
     process.exit(0);
@@ -29,11 +32,17 @@ async function main(): Promise<void> {
   process.once('SIGTERM', shutdown);
 
   await app.listen({ port: config.port, host: config.host });
-  const urls = lanUrls(config.port);
   app.log.info(`Étagère is ready. Data: ${config.dataDir}`);
-  for (const url of urls.length > 0 ? urls : [`http://localhost:${config.port}`]) {
-    app.log.info(`Open ${url} on a phone of the household`);
+  if (config.mdns) {
+    withdraw = announce({
+      port: config.port,
+      version: app.deps.version,
+      householdName: config.householdName,
+      log: app.log,
+    });
   }
+  // Plain stdout, not the JSON logger: the QR code must reach the terminal as drawn.
+  process.stdout.write(`${await pairingBanner(lanUrls(config.port), config.port, config.mdns)}\n`);
 }
 
 main().catch((error: unknown) => {

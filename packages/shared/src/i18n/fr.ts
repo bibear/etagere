@@ -216,6 +216,12 @@ export const fr = {
     found: 'Bibliothèque « {{name}} » trouvée · version {{version}}',
     invalidAddress: "Cette adresse n'est pas valide.",
     useDefault: "Revenir à l'adresse par défaut",
+    scanCode: 'Scanner le code du serveur',
+    scanHint: 'Vise le QR code affiché dans le terminal au démarrage du serveur.',
+    scanCancel: 'Annuler',
+    scanNeedsCamera: 'Étagère a besoin de la caméra pour lire le code du serveur.',
+    scanAllowCamera: 'Autoriser la caméra',
+    notServerCode: "Ce code n'est pas une adresse de serveur Étagère.",
   },
   dates: {
     justNow: "à l'instant",

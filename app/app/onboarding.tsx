@@ -19,6 +19,7 @@ import { putProfile } from '../src/api/profiles';
 import { queryKeys } from '../src/api/queryKeys';
 import { Button } from '../src/components/Button';
 import { useI18n } from '../src/i18n/I18nProvider';
+import { discoverServer } from '../src/pairing/discovery';
 import { newProfileId, useSession } from '../src/session/SessionProvider';
 import { useTheme } from '../src/theme/ThemeProvider';
 
@@ -34,10 +35,19 @@ const hostOf = (url: string): string => {
 function ServerCard() {
   const { colors, fonts, radii } = useTheme();
   const { t } = useI18n();
-  const { api, serverUrl } = useSession();
+  const { api, serverUrl, defaultServerUrl, saveServerUrl } = useSession();
   const info = useQuery({
     queryKey: queryKeys.serverInfo(serverUrl),
-    queryFn: () => api.serverInfo(),
+    // Discovery order: the saved address, then the default one (`etagere.local` on native).
+    queryFn: async () => {
+      const found = await discoverServer([serverUrl, defaultServerUrl], (url) =>
+        api.withBaseUrl(url).serverInfo(),
+      );
+      if (found.url !== serverUrl) {
+        await saveServerUrl(found.url === defaultServerUrl ? null : found.url);
+      }
+      return found.result;
+    },
     retry: false,
   });
 

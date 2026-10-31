@@ -9,35 +9,47 @@ import { BackLink } from '../src/components/BackLink';
 import { Button } from '../src/components/Button';
 import { Screen, ScreenTitle } from '../src/components/Screen';
 import { useI18n } from '../src/i18n/I18nProvider';
+import { ServerCodeScanner, canScanServerCode } from '../src/pairing/ServerCodeScanner';
+import { serverUrlFromCode } from '../src/pairing/discovery';
 import { useSession } from '../src/session/SessionProvider';
 import { normalizeServerUrl } from '../src/session/serverUrl';
 import { useTheme } from '../src/theme/ThemeProvider';
 
 /** Thrown when the typed text is not an address at all. */
 class InvalidAddress extends Error {}
+/** Thrown when a scanned QR code is not a server address. */
+class NotServerCode extends Error {}
 
 const leave = () => (router.canGoBack() ? router.back() : router.replace('/'));
 
-/** Server settings: type the address of the home server, test it, save it. */
+/** Server settings: type the address of the home server (or scan its QR code), test it, save it. */
 export default function ServerSettingsScreen() {
   const { colors, fonts, radii } = useTheme();
   const { t } = useI18n();
   const queryClient = useQueryClient();
   const { api, serverUrl, hasSavedServerUrl, saveServerUrl } = useSession();
   const [address, setAddress] = useState(serverUrl);
+  const [scanning, setScanning] = useState(false);
 
   /** Normalises the address and calls its `/api/health`. */
-  const probe = async (): Promise<{ url: string; health: HealthResponse }> => {
-    const url = normalizeServerUrl(address);
+  const probe = async (typed: string): Promise<{ url: string; health: HealthResponse }> => {
+    const url = normalizeServerUrl(typed);
     if (!url) throw new InvalidAddress();
     const health = await api.withBaseUrl(url).health();
     return { url, health };
   };
 
-  const test = useMutation({ mutationFn: probe });
+  const test = useMutation({ mutationFn: () => probe(address) });
   const save = useMutation({
-    mutationFn: async () => {
-      const { url } = await probe();
+    /** Saves the typed address, or the one read from a QR code. */
+    mutationFn: async (scanned?: string) => {
+      let typed = address;
+      if (scanned !== undefined) {
+        const fromCode = serverUrlFromCode(scanned);
+        if (!fromCode) throw new NotServerCode();
+        typed = fromCode;
+      }
+      const { url } = await probe(typed);
       await saveServerUrl(url);
     },
     onSuccess: () => {
@@ -59,8 +71,18 @@ export default function ServerSettingsScreen() {
     ? null
     : failure instanceof InvalidAddress
       ? t('serverSettings.invalidAddress')
-      : errorMessage(t, failure);
+      : failure instanceof NotServerCode
+        ? t('serverSettings.notServerCode')
+        : errorMessage(t, failure);
   const lastResult = test.data;
+
+  const onScanned = (data: string) => {
+    if (save.isPending) return;
+    const url = serverUrlFromCode(data);
+    if (url) setAddress(url);
+    test.reset();
+    save.mutate(data);
+  };
 
   const onChange = (text: string) => {
     setAddress(text);
@@ -85,7 +107,7 @@ export default function ServerSettingsScreen() {
           keyboardType="url"
           inputMode="url"
           returnKeyType="go"
-          onSubmitEditing={() => save.mutate()}
+          onSubmitEditing={() => save.mutate(undefined)}
           style={{
             height: 52,
             paddingHorizontal: 16,
@@ -102,6 +124,25 @@ export default function ServerSettingsScreen() {
           {t('serverSettings.addressHint')}
         </Text>
       </View>
+
+      {canScanServerCode &&
+        (scanning ? (
+          <ServerCodeScanner
+            onCode={onScanned}
+            onCancel={() => setScanning(false)}
+            paused={save.isPending}
+          />
+        ) : (
+          <Button
+            variant="secondary"
+            label={t('serverSettings.scanCode')}
+            onPress={() => {
+              test.reset();
+              save.reset();
+              setScanning(true);
+            }}
+          />
+        ))}
 
       {failureText !== null && (
         <Text
@@ -126,7 +167,7 @@ export default function ServerSettingsScreen() {
       <View style={{ gap: 10 }}>
         <Button
           label={t('serverSettings.saveAndUse')}
-          onPress={() => save.mutate()}
+          onPress={() => save.mutate(undefined)}
           busy={save.isPending}
           disabled={test.isPending}
         />

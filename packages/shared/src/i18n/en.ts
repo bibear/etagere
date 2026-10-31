@@ -216,6 +216,12 @@ export const en: Dictionary = {
     found: 'Library “{{name}}” found · version {{version}}',
     invalidAddress: 'This address is not valid.',
     useDefault: 'Back to the default address',
+    scanCode: 'Scan the server code',
+    scanHint: 'Point at the QR code printed in the terminal when the server starts.',
+    scanCancel: 'Cancel',
+    scanNeedsCamera: 'Étagère needs the camera to read the server code.',
+    scanAllowCamera: 'Allow the camera',
+    notServerCode: 'This code is not an Étagère server address.',
   },
   dates: {
     justNow: 'just now',

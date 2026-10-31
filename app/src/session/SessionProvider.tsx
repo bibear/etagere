@@ -40,6 +40,8 @@ export interface Session {
   serverUrl: string;
   /** True when the user saved an address (vs the platform default). */
   hasSavedServerUrl: boolean;
+  /** Where the server is expected without a saved address (`etagere.local`, or the PWA origin). */
+  defaultServerUrl: string;
   /** Client bound to the server URL and the profile id. */
   api: ApiClient;
   saveProfile(profile: DeviceProfile): Promise<void>;
@@ -125,12 +127,13 @@ export function SessionProvider({
       profile: current.profile,
       serverUrl,
       hasSavedServerUrl: current.serverUrl !== null,
+      defaultServerUrl: fallbackUrl,
       api,
       saveProfile: (profile) => persist({ ...current, profile }),
       saveServerUrl: (url) => persist({ ...current, serverUrl: url }),
       forgetProfile: () => persist({ ...current, profile: null }),
     }),
-    [stored, current, serverUrl, api, persist],
+    [stored, current, serverUrl, fallbackUrl, api, persist],
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
