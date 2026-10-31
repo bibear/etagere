@@ -3,7 +3,7 @@ import { getRandomBytes } from 'expo-crypto';
 /**
  * Formats 16 random bytes as a UUID v4.
  * Not `crypto.randomUUID()`: browsers only expose it in secure contexts, and the PWA is served
- * over plain HTTP on the home network (D-38). `getRandomValues`, behind `getRandomBytes`, works there.
+ * over plain HTTP on the home network (D-57). `getRandomValues`, behind `getRandomBytes`, works there.
  */
 export const uuidV4 = (bytes: Uint8Array): string => {
   const b = Uint8Array.from(bytes.subarray(0, 16));

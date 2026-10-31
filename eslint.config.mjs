@@ -35,7 +35,7 @@ export default tseslint.config(
     rules: {
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'error',
-      // The PWA runs over plain HTTP on the home network, where browsers hide secure-context APIs (D-38).
+      // The PWA runs over plain HTTP on the home network, where browsers hide secure-context APIs (D-57).
       'no-restricted-imports': [
         'error',
         {
