@@ -69,6 +69,11 @@ export const fr = {
     filterUnreadByMe: 'Non lus par moi',
     recentlyAdded: 'Ajoutés récemment',
     empty: 'Aucun livre pour le moment. Scanne le code-barres de ton premier livre !',
+    sortedByTitle: 'Par titre',
+    sortedByAuthor: 'Par auteur',
+    sortLabel: 'Trier : {{sort}}',
+    noResults: 'Aucun livre ne correspond.',
+    openBook: '{{title}}, {{author}}, {{status}}',
   },
   book: {
     screenTitle: 'Fiche livre',

@@ -69,6 +69,11 @@ export const en: Dictionary = {
     filterUnreadByMe: 'Not read by me',
     recentlyAdded: 'Recently added',
     empty: 'No books yet. Scan the barcode of your first book!',
+    sortedByTitle: 'By title',
+    sortedByAuthor: 'By author',
+    sortLabel: 'Sort: {{sort}}',
+    noResults: 'No book matches.',
+    openBook: '{{title}}, {{author}}, {{status}}',
   },
   book: {
     screenTitle: 'Book',

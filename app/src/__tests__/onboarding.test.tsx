@@ -1,5 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
-import { fireEvent, screen } from '@testing-library/react-native';
+import { fireEvent, screen, waitFor } from '@testing-library/react-native';
 import { Slot } from 'expo-router';
 import { renderRouter } from 'expo-router/testing-library';
 
@@ -133,6 +133,8 @@ describe('first launch', () => {
     expect(JSON.parse(data[SESSION_STORAGE_KEY] ?? '{}')).toMatchObject({
       profile: { id: NEW_ID, name: 'Inès', color: '#6B4E8A' },
     });
+    // The library then asks the server as the new profile.
+    await waitFor(() => expect(api.calls.at(-1)?.headers['x-etagere-profile']).toBe(NEW_ID));
   });
 
   it('keeps the form and explains when the server refuses', async () => {
