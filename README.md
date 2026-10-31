@@ -44,13 +44,18 @@ curl -O https://raw.githubusercontent.com/bibear/etagere/main/docker/docker-comp
 docker compose up -d
 ```
 
-The library is kept in the `etagere-data` Docker volume. On Linux, enable `network_mode: host` in
-the compose file (and remove `ports`) so that phones also find the server as `etagere.local`.
+The library is kept in the `etagere-data` Docker volume. Inside a container the server only sees
+its own address (`172.x.x.x`), so set `ETAGERE_PUBLIC_URL` to this computer's address (for example
+`http://192.168.1.20:4848`) in the compose file: the start-up QR code and the app then show a URL
+phones can reach. On Linux you can instead enable `network_mode: host` (and remove `ports`): phones
+also find the server as `etagere.local`. Docker Desktop (macOS, Windows) has no host networking,
+so `ETAGERE_PUBLIC_URL` is the way there.
 
 Without compose:
 
 ```sh
 docker run -d --name etagere --restart unless-stopped \
+  -e ETAGERE_PUBLIC_URL=http://192.168.1.20:4848 \
   -p 4848:4848 -v etagere-data:/data ghcr.io/bibear/etagere:latest
 ```
 

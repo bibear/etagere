@@ -35,6 +35,7 @@ Environment variables:
 | `ETAGERE_DATA_DIR` | `./etagere-data` | Where the SQLite database and the covers are stored |
 | `ETAGERE_HOUSEHOLD_NAME` | `Étagère` | Name shown in the apps |
 | `ETAGERE_MDNS` | on | `0` disables the `etagere.local` announce |
+| `ETAGERE_PUBLIC_URL` | none | The address phones should use, shown in the start-up banner, the QR code and the app (for example `http://192.168.1.20:4848`). Needed in Docker bridge mode and on Docker Desktop, where the server only sees the container's address |
 | `ETAGERE_ALLOWED_HOSTS` | none | Extra host names the server answers to, comma separated (for example a name of your home DNS). IP addresses, `localhost` and `*.local` names always work |
 | `LOG_LEVEL` | `info` | `debug`, `info`, `warn`, `error` |
 

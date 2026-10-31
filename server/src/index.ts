@@ -4,7 +4,7 @@ import { buildApp } from './app';
 import { loadConfig } from './config';
 import { DATABASE_FILE, openDatabase } from './db/database';
 import { announce, pairingBanner } from './discovery';
-import { lanUrls } from './network';
+import { advertisedUrls } from './network';
 import { hasPwa } from './pwa/serve';
 
 // Entry point: `npm run server` (dev, tsx watch) or the published `etagere-server` bin.
@@ -12,7 +12,8 @@ async function main(): Promise<void> {
   const config = loadConfig();
   // Bound to loopback only (HOST=127.0.0.1): the LAN addresses would not answer.
   const loopbackOnly = ['127.0.0.1', '::1', 'localhost'].includes(config.host);
-  const addresses = () => (loopbackOnly ? [] : lanUrls(config.port));
+  const addresses = () =>
+    advertisedUrls({ port: config.port, publicUrl: config.publicUrl, loopbackOnly });
   const db = openDatabase(join(config.dataDir, DATABASE_FILE));
   // The web app exported by `npm run build:web` lands in the package's `public/`.
   const publicDir = config.publicDir ?? join(__dirname, '..', 'public');

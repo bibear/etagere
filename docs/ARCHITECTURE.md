@@ -248,7 +248,10 @@ service worker caching the shell. Opening `http://<server>:4848` on a phone give
 - Default port `4848` (`PORT` env). On start the server prints (plain stdout, not the JSON log) its
   LAN URLs, `http://etagere.local:<port>` when mDNS is on, and a terminal QR code (`qrcode`) of the
   main URL: the first private IPv4 URL, e.g. `http://192.168.1.20:4848` (the same code opens the PWA
-  from a phone camera). It announces `_etagere._tcp` over mDNS (`bonjour-service`, `server/src/discovery.ts`)
+  from a phone camera). Container and VM bridges (`docker0`, `br-*`, `veth*`…) are left out and VPN
+  tunnels ranked last. `ETAGERE_PUBLIC_URL` (e.g. `http://192.168.1.20:4848`) replaces those
+  addresses in the banner, the QR code and `/api/server-info` (Docker bridge mode, Docker Desktop),
+  and its host name is accepted by the Host check. It announces `_etagere._tcp` over mDNS (`bonjour-service`, `server/src/discovery.ts`)
   named after the household, host name `etagere.local`, TXT `{ version, path: "/api" }`. Best effort:
   a failure (port 5353 busy, no multicast, Docker bridge network) only logs a warning.
   `ETAGERE_MDNS=0` turns the announce off.

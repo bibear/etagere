@@ -9,6 +9,9 @@ services:
     init: true
     environment:
       ETAGERE_HOUSEHOLD_NAME: 'Étagère'
+      # Inside a container the server only sees its own address (172.x): set this computer's
+      # address so the start-up QR code and the app show a URL phones can reach.
+      # ETAGERE_PUBLIC_URL: 'http://192.168.1.20:4848'
     volumes:
       # The library: SQLite database and covers (back it up, see the README).
       # To use a folder instead: `- ./data:/data` after `sudo chown 1000:1000 ./data`

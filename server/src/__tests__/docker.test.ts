@@ -71,6 +71,10 @@ describe('docker-compose.yml', () => {
   it('documents host networking for mDNS', () => {
     expect(compose).toContain('# network_mode: host');
   });
+
+  it('documents the public URL for bridge networking', () => {
+    expect(compose).toContain('# ETAGERE_PUBLIC_URL:');
+  });
 });
 
 describe('release:docker', () => {
