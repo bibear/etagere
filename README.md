@@ -94,7 +94,7 @@ Requires Node.js 24 or newer.
 ```sh
 npm install        # also enables the versioned git hooks (.githooks/pre-push)
 npm run check      # lint + typecheck + all tests: the quality gate, run before every push
-npm run server     # API server in watch mode on port 4848
+npm run server     # API server in watch mode on port 4848 (data in server/etagere-data)
 npm run app        # Expo dev server
 npm run web        # the app in a desktop browser
 ```
