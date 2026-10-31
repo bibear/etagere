@@ -145,7 +145,7 @@ describe('scanner', () => {
     await scan(ISBN);
 
     expect(await screen.findByText('Livre trouvé')).toBeTruthy();
-    expect(screen.getByText('via Open Library')).toBeTruthy();
+    expect(screen.getByText('via Open Library · Google Books')).toBeTruthy();
     expect(screen.getByText('Le Nom du vent')).toBeTruthy();
     expect(screen.getByText('Patrick Rothfuss')).toBeTruthy();
     expect(screen.getByText('Fantasy · Bragelonne · 2009')).toBeTruthy();
@@ -208,7 +208,11 @@ describe('scanner', () => {
     });
     await scan(ISBN);
 
-    expect(await screen.findByText('Open Library ne répond pas. Réessaie plus tard.')).toBeTruthy();
+    expect(
+      await screen.findByText(
+        'Les catalogues en ligne (Open Library, Google Books) ne répondent pas. Réessaie plus tard.',
+      ),
+    ).toBeTruthy();
     await press('Réessayer');
     await waitFor(() => expect(lookups(server)).toHaveLength(2));
   });

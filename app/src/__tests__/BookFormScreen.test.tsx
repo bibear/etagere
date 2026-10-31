@@ -136,11 +136,11 @@ describe('add a book by hand', () => {
     await screen.findByRole('header', { name: 'Ajouter un livre' });
 
     await type('ISBN', '978-2-35294-015-9');
-    await press('Compléter avec Open Library');
+    await press('Compléter en ligne');
 
     expect(await screen.findByDisplayValue('Le Nom du vent')).toBeTruthy();
     expect(screen.getByDisplayValue('Bragelonne')).toBeTruthy();
-    expect(screen.getByText(/Fiche complétée depuis Open Library/)).toBeTruthy();
+    expect(screen.getByText(/Fiche complétée depuis Open Library et Google Books/)).toBeTruthy();
 
     await press('Ajouter à la bibliothèque');
     await screen.findByText('Detail stub');
@@ -157,9 +157,11 @@ describe('add a book by hand', () => {
     });
     expect(await screen.findByDisplayValue('9782070368228')).toBeTruthy();
 
-    await press('Compléter avec Open Library');
+    await press('Compléter en ligne');
 
-    expect(await screen.findByText(/Open Library ne connaît pas cet ISBN/)).toBeTruthy();
+    expect(
+      await screen.findByText(/Ni Open Library ni Google Books ne connaissent cet ISBN/),
+    ).toBeTruthy();
   });
 
   it('points to the existing book when the ISBN is already in the library', async () => {

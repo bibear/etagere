@@ -9,6 +9,8 @@ import { ApiError } from '../../src/api/client';
 import { deleteComment, editComment, postComment, useComments } from '../../src/api/comments';
 import { errorMessage } from '../../src/api/errors';
 import { queryKeys } from '../../src/api/queryKeys';
+import { BackCover } from '../../src/books/BackCover';
+import { EnrichAction } from '../../src/books/EnrichAction';
 import { LoanPanel } from '../../src/books/LoanPanel';
 import { Avatar } from '../../src/components/Avatar';
 import { BackLink } from '../../src/components/BackLink';
@@ -425,7 +427,10 @@ function Reviews({ book }: { book: BookDetail }) {
   );
 }
 
-/** Book detail (design screen 3): cover, metadata, reading lock, read by, household reviews. */
+/**
+ * Book detail (design screen 3): cover, metadata, reading lock, read by, back cover (with
+ * "Fill in missing details" when the cover or the text is missing), household reviews.
+ */
 export default function BookScreen() {
   const { id = '' } = useLocalSearchParams<{ id: string }>();
   const { colors, fonts, fontSizes } = useTheme();
@@ -519,6 +524,14 @@ export default function BookScreen() {
       </View>
 
       <ReadingPanel book={detail} />
+
+      {detail.description ? (
+        <>
+          <View style={[styles.separator, { backgroundColor: colors.border }]} />
+          <BackCover text={detail.description} />
+        </>
+      ) : null}
+      <EnrichAction book={detail} />
 
       <View style={[styles.separator, { backgroundColor: colors.border }]} />
 

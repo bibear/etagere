@@ -28,6 +28,13 @@ export type ReadingAction = 'start' | 'finish' | 'putdown' | 'already-read';
 export const readingAction = (api: ApiClient, id: string, action: ReadingAction) =>
   api.post<BookDetail>(`/api/books/${encodeURIComponent(id)}/reading/${action}`);
 
+/**
+ * `POST /api/books/:id/enrich`: fills only the details the book lacks from Open Library and
+ * Google Books (`409 no_isbn`, `502 upstream_unavailable`).
+ */
+export const enrichBook = (api: ApiClient, id: string) =>
+  api.post<BookDetail>(`/api/books/${encodeURIComponent(id)}/enrich`);
+
 export function useBooks(params: BookListParams) {
   const api = useApi();
   return useQuery({

@@ -445,7 +445,7 @@ function SheetContent({
     case 'found':
       return (
         <>
-          <Badge label={t('scan.found')} tone="ok" extra={t('scan.viaOpenLibrary')} />
+          <Badge label={t('scan.found')} tone="ok" extra={t('scan.viaSources')} />
           <CandidateRow
             title={phase.candidate.title}
             authors={phase.candidate.authors}

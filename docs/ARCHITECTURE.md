@@ -160,6 +160,9 @@ the app with `buildTestApp()` (`server/src/__tests__/support/test-app.ts`): in-m
   never overwrites what the household entered (title and authors are never touched). Publishes
   `books.changed` when something was filled. Book without ISBN → `409 no_isbn`; lookup failure →
   `502 upstream_unavailable`; no source knows the ISBN → `200` with the book unchanged.
+  App: the book detail shows the description as a "Back cover" section (collapsed to 6 lines with
+  "Read more", hidden when empty) and a discreet "Fill in missing details" link when the book has an
+  ISBN and lacks a cover or a description.
 - `GET /api/lookup/:isbn` → `200 BookCandidate` | `400 invalid_isbn` | `404 not_found` |
   `409 already_in_library` | `502 upstream_unavailable`. Accepts ISBN-10 or ISBN-13 with or without
   hyphens; normalised to ISBN-13. Two sources queried in parallel, each within the same 5 s deadline
