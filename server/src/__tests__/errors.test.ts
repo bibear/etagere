@@ -82,7 +82,8 @@ describe('error format', () => {
       payload: '{"name": ',
     });
     expect(response.statusCode).toBe(400);
-    expect(response.json()).toEqual({ code: 'invalid_input' });
+    // Same shape as every validation error (ARCHITECTURE § HTTP API): no field to point at.
+    expect(response.json()).toEqual({ code: 'invalid_input', fields: [] });
   });
 
   it('answers 404 not_found to an unknown route', async () => {

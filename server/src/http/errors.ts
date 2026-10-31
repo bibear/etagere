@@ -26,14 +26,15 @@ export function installErrorHandling(
       return reply.code(error.statusCode).send({ ...error.details, code: error.code });
     }
     if (error instanceof ZodError || ('validation' in error && error.validation)) {
-      return reply.code(400).send({ code: 'invalid_input' });
+      return reply.code(400).send({ code: 'invalid_input', fields: [] });
     }
     // Malformed JSON, too large body, unsupported media type: Fastify's own 4xx.
     const status = 'statusCode' in error ? error.statusCode : undefined;
     if (status !== undefined && status >= 400 && status < 500) {
-      return reply
-        .code(status)
-        .send({ code: status === 413 ? 'payload_too_large' : 'invalid_input' });
+      // Validation errors always carry `fields` (contract); nothing to point at here.
+      const body =
+        status === 413 ? { code: 'payload_too_large' } : { code: 'invalid_input', fields: [] };
+      return reply.code(status).send(body);
     }
     request.log.error({ err: error }, 'unexpected error');
     return reply.code(500).send({ code: 'internal_error' });
