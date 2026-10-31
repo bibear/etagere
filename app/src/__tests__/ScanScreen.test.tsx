@@ -7,7 +7,12 @@ import { Linking, Text, View } from 'react-native';
 
 import { AppProviders } from '../components/AppProviders';
 import { ScanScreen } from '../scan/ScanScreen';
-import type { CameraPermission, ScannerBackend, ScannerCameraProps } from '../scan/types';
+import type {
+  CameraPermission,
+  PhotoCaptureProps,
+  ScannerBackend,
+  ScannerCameraProps,
+} from '../scan/types';
 import { fakeFetch } from '../test/fakeFetch';
 import { TEST_PROFILE, TEST_SERVER_URL } from '../test/render';
 
@@ -62,6 +67,29 @@ function fakeScanner(permission: Partial<CameraPermission> = {}) {
   };
   const scan = (code: string) => act(() => camera.props?.onCode(code));
   return { backend, camera, request, scan };
+}
+
+/** The web fallback: no live camera (or one that fails), a photo button the test drives. */
+function fakePhotoScanner({ live = false } = {}) {
+  const base = fakeScanner();
+  const photo = { props: null as PhotoCaptureProps | null };
+  function PhotoCapture(props: PhotoCaptureProps) {
+    photo.props = props;
+    return <Text>Photo button</Text>;
+  }
+  const backend: ScannerBackend = {
+    ...base.backend,
+    Camera: live ? base.backend.Camera : null,
+    PhotoCapture,
+    hasTorch: false,
+  };
+  return {
+    ...base,
+    backend,
+    photo,
+    shoot: (code: string) => act(() => photo.props?.onCode(code)),
+    miss: () => act(() => photo.props?.onNoBarcode()),
+  };
 }
 
 async function renderScanner(
@@ -287,5 +315,61 @@ describe('scanner states', () => {
 
     expect(screen.getByRole('header', { name: 'Accès à la caméra' })).toBeTruthy();
     expect(screen.queryByTestId('fake-camera')).toBeNull();
+  });
+});
+
+describe('photo fallback (PWA over plain HTTP)', () => {
+  it('decodes a photo of the barcode instead of the live camera', async () => {
+    const scanner = fakePhotoScanner();
+    const { server } = await renderScanner(
+      { [`GET /api/lookup/${ISBN}`]: { body: CANDIDATE } },
+      scanner,
+    );
+
+    expect(screen.getByText(/Prends en photo le code-barres/)).toBeTruthy();
+    expect(screen.getByText(/demande une connexion sécurisée/)).toBeTruthy();
+    expect(screen.queryByTestId('fake-camera')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Allumer la lampe' })).toBeNull();
+    expect(scanner.photo.props?.disabled).toBe(false);
+
+    await scanner.shoot(ISBN);
+
+    expect(await screen.findByText('Livre trouvé')).toBeTruthy();
+    expect(lookups(server)).toHaveLength(1);
+    expect(scanner.photo.props?.disabled).toBe(true);
+  });
+
+  it('says when the photo holds no book barcode', async () => {
+    const scanner = fakePhotoScanner();
+    const { server } = await renderScanner({}, scanner);
+
+    await scanner.miss();
+    expect(screen.getByText(/Aucun code-barres de livre lisible/)).toBeTruthy();
+
+    await scanner.shoot('4006381333931');
+    expect(screen.getByText(/Aucun code-barres de livre lisible/)).toBeTruthy();
+    expect(lookups(server)).toHaveLength(0);
+  });
+
+  it('falls back to the photo when the live camera is unavailable', async () => {
+    const scanner = fakePhotoScanner({ live: true });
+    await renderScanner({}, scanner);
+    expect(screen.getByTestId('fake-camera')).toBeTruthy();
+
+    await act(() => scanner.camera.props?.onError?.('unavailable'));
+
+    expect(screen.queryByTestId('fake-camera')).toBeNull();
+    expect(screen.getByText('Prends en photo le code-barres au dos du livre.')).toBeTruthy();
+    expect(screen.getByText('Photo button')).toBeTruthy();
+  });
+
+  it('keeps the photo button when the browser camera is refused', async () => {
+    const scanner = fakePhotoScanner({ live: true });
+    await renderScanner({}, scanner);
+
+    await act(() => scanner.camera.props?.onError?.('denied'));
+
+    expect(screen.getByRole('header', { name: 'Accès à la caméra' })).toBeTruthy();
+    expect(screen.getByText('Photo button')).toBeTruthy();
   });
 });

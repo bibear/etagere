@@ -163,6 +163,11 @@ export const fr = {
     allowCamera: 'Autoriser la caméra',
     openSettings: 'Ouvrir les réglages',
     cameraUnavailable: "La caméra n'est pas disponible sur cet appareil.",
+    photoHint: 'Prends en photo le code-barres au dos du livre.',
+    photoWhy: 'Le scanner en direct demande une connexion sécurisée : ici, une photo suffit.',
+    takePhoto: 'Prendre le code-barres en photo',
+    readingPhoto: 'Lecture de la photo…',
+    photoMiss: 'Aucun code-barres de livre lisible sur cette photo. Rapproche-toi et réessaie.',
   },
   readings: {
     title: 'Mes lectures',

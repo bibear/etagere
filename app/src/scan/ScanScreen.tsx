@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Linking,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -67,6 +68,7 @@ export function ScanScreen({
   const [torch, setTorch] = useState(false);
   const [focused, setFocused] = useState(true);
   const [cameraError, setCameraError] = useState<ScannerError | null>(null);
+  const [photoMiss, setPhotoMiss] = useState(false);
   const asked = useRef(false);
 
   useFocusEffect(
@@ -112,18 +114,85 @@ export function ScanScreen({
 
   const scanAnother = () => {
     gate.reset();
+    setPhotoMiss(false);
     add.reset();
     setPhase({ kind: 'scanning' });
   };
 
   const close = () => (router.canGoBack() ? router.back() : router.navigate('/'));
   const scanning = phase.kind === 'scanning';
-  const cameraReady = permission.status === 'granted' && cameraError === null;
-  const Camera = backend.Camera;
+  const { Camera, PhotoCapture } = backend;
+  const granted = permission.status === 'granted';
+  const live = Camera !== null && granted && cameraError === null;
+  const photo = !live && PhotoCapture !== undefined && (Camera === null || cameraError !== null);
+
+  const onPhotoCode = (payload: string) => {
+    setPhotoMiss(false);
+    const isbn = gate.accept(payload);
+    if (isbn) lookup.mutate(isbn);
+    else setPhotoMiss(true);
+  };
+
+  const photoButton = PhotoCapture && (
+    <View style={styles.permissionButton}>
+      <PhotoCapture
+        disabled={!scanning}
+        onCode={onPhotoCode}
+        onNoBarcode={() => setPhotoMiss(true)}
+      />
+    </View>
+  );
+
+  let middle: React.ReactNode;
+  if (live) {
+    middle = (
+      <>
+        <Viewfinder accent={colors.scannerAccent} label={t('scan.barcodeLabel')} />
+        <Text style={[styles.hint, { fontFamily: fonts.body }]}>
+          {`${t('scan.aim')}\n${t('scan.autoAdd')}`}
+        </Text>
+      </>
+    );
+  } else if (photo && cameraError !== 'denied') {
+    middle = (
+      <View style={styles.permission}>
+        <Text style={[styles.hint, { fontFamily: fonts.body }]}>
+          {Camera === null ? `${t('scan.photoHint')}\n${t('scan.photoWhy')}` : t('scan.photoHint')}
+        </Text>
+        {photoButton}
+        {photoMiss && (
+          <Text accessibilityRole="alert" style={[styles.hint, { fontFamily: fonts.bodyMedium }]}>
+            {t('scan.photoMiss')}
+          </Text>
+        )}
+      </View>
+    );
+  } else if (cameraError === 'unavailable') {
+    middle = (
+      <Text style={[styles.hint, { fontFamily: fonts.body }]}>{t('scan.cameraUnavailable')}</Text>
+    );
+  } else if (permission.status === 'pending') {
+    middle = <ActivityIndicator color={colors.scannerAccent} />;
+  } else {
+    middle = (
+      <PermissionPanel
+        canAsk={permission.canAskAgain && cameraError !== 'denied'}
+        showSettings={Platform.OS !== 'web'}
+        onAllow={() => permission.request().catch(() => {})}
+      >
+        {photoButton}
+        {photoMiss && (
+          <Text accessibilityRole="alert" style={[styles.hint, { fontFamily: fonts.bodyMedium }]}>
+            {t('scan.photoMiss')}
+          </Text>
+        )}
+      </PermissionPanel>
+    );
+  }
 
   return (
     <View style={[styles.root, { backgroundColor: colors.scannerBackground }]}>
-      {cameraReady && (
+      {live && Camera && (
         <Camera
           active={scanning && focused}
           torch={torch}
@@ -140,7 +209,7 @@ export function ScanScreen({
           >
             {t('scan.title')}
           </Text>
-          {backend.hasTorch && cameraReady ? (
+          {backend.hasTorch && live ? (
             <RoundButton
               label={t(torch ? 'scan.torchOff' : 'scan.torchOn')}
               icon="torch"
@@ -152,25 +221,7 @@ export function ScanScreen({
           )}
         </View>
 
-        <View style={styles.middle}>
-          {permission.status === 'granted' && cameraError !== 'denied' ? (
-            <>
-              <Viewfinder accent={colors.scannerAccent} label={t('scan.barcodeLabel')} />
-              <Text style={[styles.hint, { fontFamily: fonts.body }]}>
-                {cameraError === 'unavailable'
-                  ? t('scan.cameraUnavailable')
-                  : `${t('scan.aim')}\n${t('scan.autoAdd')}`}
-              </Text>
-            </>
-          ) : permission.status === 'pending' ? (
-            <ActivityIndicator color={colors.scannerAccent} />
-          ) : (
-            <PermissionPanel
-              canAsk={permission.canAskAgain && cameraError !== 'denied'}
-              onAllow={() => permission.request().catch(() => {})}
-            />
-          )}
-        </View>
+        <View style={styles.middle}>{middle}</View>
 
         <Sheet>
           <SheetContent
@@ -281,7 +332,17 @@ function Viewfinder({ accent, label }: { accent: string; label: string }) {
   );
 }
 
-function PermissionPanel({ canAsk, onAllow }: { canAsk: boolean; onAllow: () => void }) {
+function PermissionPanel({
+  canAsk,
+  showSettings,
+  onAllow,
+  children,
+}: {
+  canAsk: boolean;
+  showSettings: boolean;
+  onAllow: () => void;
+  children?: React.ReactNode;
+}) {
   const { t } = useI18n();
   const { fonts } = useTheme();
   return (
@@ -293,12 +354,15 @@ function PermissionPanel({ canAsk, onAllow }: { canAsk: boolean; onAllow: () => 
         {t('scan.permissionTitle')}
       </Text>
       <Text style={[styles.hint, { fontFamily: fonts.body }]}>{t('scan.permissionBody')}</Text>
-      <View style={styles.permissionButton}>
-        <Button
-          label={t(canAsk ? 'scan.allowCamera' : 'scan.openSettings')}
-          onPress={canAsk ? onAllow : () => Linking.openSettings().catch(() => {})}
-        />
-      </View>
+      {(canAsk || showSettings) && (
+        <View style={styles.permissionButton}>
+          <Button
+            label={t(canAsk ? 'scan.allowCamera' : 'scan.openSettings')}
+            onPress={canAsk ? onAllow : () => Linking.openSettings().catch(() => {})}
+          />
+        </View>
+      )}
+      {children}
     </View>
   );
 }

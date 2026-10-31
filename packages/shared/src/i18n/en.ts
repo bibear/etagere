@@ -163,6 +163,11 @@ export const en: Dictionary = {
     allowCamera: 'Allow the camera',
     openSettings: 'Open settings',
     cameraUnavailable: 'The camera is not available on this device.',
+    photoHint: 'Take a photo of the barcode on the back of the book.',
+    photoWhy: 'Live scanning needs a secure connection: here, a photo does the job.',
+    takePhoto: 'Take a photo of the barcode',
+    readingPhoto: 'Reading the photo…',
+    photoMiss: 'No readable book barcode on this photo. Get closer and try again.',
   },
   readings: {
     title: 'My readings',

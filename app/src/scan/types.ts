@@ -9,8 +9,8 @@ export interface CameraPermission {
   request(): Promise<void>;
 }
 
-/** Why a scanner camera could not deliver codes. */
-export type ScannerError = 'denied' | 'unavailable' | 'no_barcode';
+/** Why a live camera could not deliver codes: refused by the user, or no usable camera. */
+export type ScannerError = 'denied' | 'unavailable';
 
 export interface ScannerCameraProps {
   /** Decode only while true (paused while a result is shown). */
@@ -23,11 +23,22 @@ export interface ScannerCameraProps {
 
 /**
  * Everything platform-specific about scanning, behind one small interface: the camera view that
- * decodes barcodes and the permission it needs. Native uses expo-camera (`backend.tsx`), the
+ * decodes barcodes, the permission it needs and, on the web, a photo fallback. Native uses expo-camera (`backend.tsx`), the
  * web / PWA its own decoders (`backend.web.tsx`); tests pass a fake.
  */
+export interface PhotoCaptureProps {
+  /** The payload decoded from the picture. */
+  onCode(code: string): void;
+  /** The picture holds no readable barcode. */
+  onNoBarcode(): void;
+  disabled?: boolean;
+}
+
 export interface ScannerBackend {
   useCameraPermission(): CameraPermission;
-  Camera: ComponentType<ScannerCameraProps>;
+  /** Live camera decoding continuously; null where only photos can be decoded. */
+  Camera: ComponentType<ScannerCameraProps> | null;
+  /** "Take a photo of the barcode" fallback (PWA over plain HTTP, or no live camera). */
+  PhotoCapture?: ComponentType<PhotoCaptureProps>;
   hasTorch: boolean;
 }
