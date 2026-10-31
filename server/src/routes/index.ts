@@ -3,6 +3,7 @@ import type { FastifyInstance } from 'fastify';
 import { bookRoutes } from './books';
 import { commentRoutes } from './comments';
 import { coverRoutes } from './covers';
+import { eventRoutes } from './events';
 import { lookupRoutes } from './lookup';
 import { profileRoutes } from './profiles';
 import { readingRoutes } from './readings';
@@ -17,4 +18,5 @@ export async function apiRoutes(app: FastifyInstance): Promise<void> {
   await app.register(coverRoutes);
   await app.register(readingRoutes);
   await app.register(commentRoutes);
+  await app.register(eventRoutes);
 }

@@ -201,9 +201,14 @@ BookDetail    = BookSummary & { genres, publisher, year, pages, description, sou
     and `toBuyError: "upstream_unavailable"`. `BuyIdea = { title, authors, isbn13|null, coverSourceUrl|null, reason: Reason }`.
 
 ### Realtime
-- `GET /api/events` WebSocket. The server pushes `{ type: "books.changed"|"profiles.changed"|"comments.changed", id? }`
-  after every mutation. The app invalidates its cached queries on each event (TanStack Query) and
-  reconnects with backoff.
+- `GET /api/events` WebSocket (`@fastify/websocket`, same LAN guard). The server pushes `{ type: "books.changed"|"profiles.changed"|"comments.changed", id? }`
+  after every mutation: `id` is the book id for `books.changed` and `comments.changed`, the profile id for
+  `profiles.changed`. One-way channel (client messages ignored); the server pings every 30 s and drops dead sockets.
+- App side (`app/src/realtime`, `<Realtime />` mounted in the root layout): connects while the device has a
+  profile, invalidates the query key prefixes of `app/src/api/queryKeys.ts` an event makes stale
+  (`books.changed` → books, me, server-info; `comments.changed` → that book's comments and detail, me;
+  `profiles.changed` → profiles, books, comments, me, server-info), reconnects with exponential backoff
+  (1 s → 30 s) and refreshes every query after a reconnection.
 
 ### PWA
 The server serves the exported web app (`app/dist`, copied into the published server package as

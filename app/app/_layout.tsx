@@ -11,6 +11,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
 import { AppProviders } from '../src/components/AppProviders';
+import { Realtime } from '../src/realtime';
 import { useTheme } from '../src/theme/ThemeProvider';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -20,6 +21,7 @@ function RootStack() {
   return (
     <>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+      <Realtime />
       <Stack
         screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
       >

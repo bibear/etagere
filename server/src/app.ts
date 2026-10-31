@@ -1,4 +1,5 @@
 import cors from '@fastify/cors';
+import websocket from '@fastify/websocket';
 import Fastify, { type FastifyBaseLogger, type FastifyInstance } from 'fastify';
 
 import { CoverStore } from './covers';
@@ -72,13 +73,17 @@ export function buildApp(options: BuildAppOptions): FastifyInstance {
 
   // Only the home network may talk to the server (D-03).
   app.addHook('onRequest', async (request, reply) => {
-    if (!isLocalAddress(request.ip)) return reply.code(403).send({ code: 'outside_lan' });
+    // No address (detached socket): refused too, the guard fails closed.
+    const ip = typeof request.ip === 'string' ? request.ip : '';
+    if (!isLocalAddress(ip)) return reply.code(403).send({ code: 'outside_lan' });
   });
 
   app.register(cors, {
     origin: (origin, callback) => callback(null, origin === undefined || isLocalOrigin(origin)),
   });
 
+  // WebSocket support at the root (realtime events, `app.injectWS` in tests).
+  app.register(websocket, { options: { maxPayload: 1024 } });
   app.register(apiRoutes, { prefix: '/api' });
   return app;
 }
