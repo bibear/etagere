@@ -158,25 +158,27 @@ describe('books API', () => {
     });
 
     it('filters by availability and by what I have not read, counts staying global', async () => {
-      const ids = Object.fromEntries((await list()).books.map((book) => [book.title, book.id]));
+      const ids: Record<string, string> = Object.fromEntries(
+        (await list()).books.map((book) => [book.title, book.id]),
+      );
       const at = TEST_NOW.toISOString();
       t.db
         .prepare(
           `INSERT INTO readings (id, book_id, profile_id, started_at, state)
            VALUES ('r1', ?, ?, ?, 'reading')`,
         )
-        .run(ids.Dune, other, at);
+        .run(String(ids.Dune), other, at);
       t.db
         .prepare(
           `INSERT INTO loans (id, book_id, borrower, lent_by, lent_at) VALUES ('l1', ?, 'Paul', ?, ?)`,
         )
-        .run(ids["L'Étranger"], me, at);
+        .run(String(ids["L'Étranger"]), me, at);
       t.db
         .prepare(
           `INSERT INTO readings (id, book_id, profile_id, finished_at, state)
            VALUES ('r2', ?, ?, ?, 'finished')`,
         )
-        .run(ids['Les Misérables'], me, at);
+        .run(String(ids['Les Misérables']), me, at);
 
       const reading = await list('?filter=reading');
       expect(reading.books).toEqual([
