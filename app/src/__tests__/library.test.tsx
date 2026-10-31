@@ -139,11 +139,25 @@ describe('LibraryScreen', () => {
     expect(router.push).toHaveBeenCalledWith('/scan');
   });
 
-  it('says when nothing matches the search', async () => {
+  it('says when nothing matches the filter', async () => {
     const api = fakeFetch({ 'GET /api/books': { body: booksResponse([], COUNTS) } });
     await renderWithProviders(<LibraryScreen />, { fetch: api.fetch });
 
     expect(await screen.findByText('Aucun livre ne correspond.')).toBeTruthy();
+  });
+
+  it('says when nothing matches the search, even though the counts then are zero', async () => {
+    const api = fakeFetch({
+      'GET /api/books?filter=all&sort=added': { body: booksResponse([DUNE], COUNTS) },
+      'GET /api/books?query=zzz&filter=all&sort=added': { body: booksResponse([]) },
+    });
+    await renderWithProviders(<LibraryScreen />, { fetch: api.fetch });
+    await screen.findByRole('link', { name: /^Dune/ });
+
+    await fireEvent.changeText(screen.getByLabelText('Rechercher un livre'), 'zzz');
+
+    expect(await screen.findByText('Aucun livre ne correspond.')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Scanner un livre' })).toBeNull();
   });
 
   it('shows an error with a retry when the server is unreachable', async () => {

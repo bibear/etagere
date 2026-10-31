@@ -127,7 +127,8 @@ export default function LibraryScreen() {
       </View>
     );
   } else if (books.data.books.length === 0) {
-    const emptyLibrary = books.data.counts.all === 0;
+    // Counts follow the search, so only an empty count without a search means an empty library.
+    const emptyLibrary = books.data.counts.all === 0 && query.trim() === '';
     body = (
       <View style={styles.message}>
         <Text
