@@ -164,6 +164,7 @@ export const fr = {
     profile_mismatch: 'Cet appareil ne peut modifier que son propre profil.',
     outside_lan: 'Le serveur ne répond que sur le Wi-Fi de la maison.',
     unavailable: "Ce livre n'est pas disponible.",
+    not_reader: 'Seule la personne qui le lit peut faire ça.',
     not_author: "Seul l'auteur peut modifier ce commentaire.",
     internal_error: 'Le serveur a rencontré un problème.',
     network: 'Impossible de joindre le serveur.',

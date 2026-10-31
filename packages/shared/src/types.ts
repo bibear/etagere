@@ -163,6 +163,7 @@ export const ERROR_CODES = [
   'profile_mismatch',
   'outside_lan',
   'unavailable',
+  'not_reader',
   'not_author',
   'internal_error',
 ] as const;

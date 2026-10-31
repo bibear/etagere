@@ -241,6 +241,4 @@ export function deleteBook(db: Database, id: string): void {
   db.prepare('DELETE FROM books WHERE id = ?').run(id);
 }
 
-/** True for a SQLite UNIQUE constraint violation (e.g. a duplicate ISBN inserted concurrently). */
-export const isUniqueViolation = (error: unknown): boolean =>
-  error instanceof Error && /UNIQUE constraint failed/i.test(error.message);
+export { isUniqueViolation } from './database';

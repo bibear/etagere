@@ -86,3 +86,12 @@ export const parseStringArray = (value: unknown): string[] => {
   const parsed: unknown = JSON.parse(value);
   return Array.isArray(parsed) ? parsed.filter((item) => typeof item === 'string') : [];
 };
+
+/**
+ * True for a SQLite UNIQUE constraint violation (duck-typed: `node:sqlite` errors may come from
+ * another realm under Jest, where `instanceof Error` is false).
+ */
+export const isUniqueViolation = (error: unknown): boolean => {
+  const message = (error as { message?: unknown } | null)?.message;
+  return typeof message === 'string' && /UNIQUE constraint failed/i.test(message);
+};

@@ -169,12 +169,15 @@ BookDetail    = BookSummary & { genres, publisher, year, pages, description, sou
 ```
 
 ### Readings (the lock)
-- `POST /api/books/:id/reading/start` → `200 BookDetail`; already reading by someone / lent → `409 { code: "unavailable", availability }`
-- `POST /api/books/:id/reading/finish` (only the current reader) → `200 BookDetail`
-- `POST /api/books/:id/reading/putdown` ("Je le repose", state `abandoned`, frees the book) → `200 BookDetail`
-- `POST /api/books/:id/reading/already-read` → `200 BookDetail` (idempotent per profile)
+- `POST /api/books/:id/reading/start` → `200 BookDetail`; already reading by someone / lent → `409 { code: "unavailable", availability }`.
+  Idempotent for the current reader. One book at a time per member: starting a book puts down the
+  member's previous current reading (frees it).
+- `POST /api/books/:id/reading/finish` (only the current reader, else `409 { code: "not_reader", availability }`) → `200 BookDetail`
+- `POST /api/books/:id/reading/putdown` ("Je le repose", state `abandoned`, frees the book; current reader only, else `409 not_reader`) → `200 BookDetail`
+- `POST /api/books/:id/reading/already-read` → `200 BookDetail` (idempotent per profile; when I am the current reader it finishes my reading)
 - `GET /api/me/readings` → `{ current: ReadingItem | null, finished: ReadingItem[] }` for the header profile,
-  plus `stats: { finishedCount }`. `ReadingItem = { book: BookSummary, startedAt, finishedAt, commentCount }`
+  plus `stats: { finishedCount }`. `ReadingItem = { book: BookSummary, startedAt, finishedAt, commentCount }`.
+  `finished`: one item per book (latest finish), most recent first; `finishedCount` = number of distinct books.
 
 ### Loans
 - `POST /api/books/:id/loan` body `{ borrower }` → `200 BookDetail`; unavailable → `409 unavailable`
