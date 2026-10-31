@@ -180,8 +180,10 @@ BookDetail    = BookSummary & { genres, publisher, year, pages, description, sou
   `finished`: one item per book (latest finish), most recent first; `finishedCount` = number of distinct books.
 
 ### Loans
-- `POST /api/books/:id/loan` body `{ borrower }` → `200 BookDetail`; unavailable → `409 unavailable`
-- `POST /api/books/:id/loan/return` → `200 BookDetail`
+- `POST /api/books/:id/loan` body `{ borrower }` → `200 BookDetail`; unavailable (being read, its reader
+  included, or already lent) → `409 { code: "unavailable", availability }`
+- `POST /api/books/:id/loan/return` → `200 BookDetail` (any member); no open loan → `409 { code: "not_lent", availability }`
+- Both publish `books.changed`. Returned loans stay in the table (history).
 
 ### Comments
 - `GET /api/books/:id/comments` → `{ comments: Comment[] }` newest first
