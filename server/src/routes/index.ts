@@ -8,6 +8,7 @@ import { loanRoutes } from './loans';
 import { lookupRoutes } from './lookup';
 import { profileRoutes } from './profiles';
 import { readingRoutes } from './readings';
+import { recommendationRoutes } from './recommendations';
 import { serverRoutes } from './server';
 
 // One module per route group, all mounted under /api. Add yours with one line below.
@@ -19,6 +20,7 @@ export async function apiRoutes(app: FastifyInstance): Promise<void> {
   await app.register(coverRoutes);
   await app.register(readingRoutes);
   await app.register(loanRoutes);
+  await app.register(recommendationRoutes);
   await app.register(commentRoutes);
   await app.register(eventRoutes);
 }

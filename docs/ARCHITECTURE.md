@@ -194,13 +194,19 @@ BookDetail    = BookSummary & { genres, publisher, year, pages, description, sou
 
 ### Recommendations
 - `GET /api/me/recommendations` → `{ featured: Reco|null, onShelf: Reco[], toBuy: BuyIdea[] }`
-  - `onShelf`: books in the house not read by me, scored by shared authors (+3), shared genres (+1 each,
-    max 3) with books I finished, household comments count (+0.5 each, max 2); available ones first.
-    `Reco = { book: BookSummary, reasons: Reason[], quote: { author: {name,color}, text } | null }`,
-    `Reason = { kind: "author"|"genre"|"household", ref: string }` (the app renders the sentence).
-  - `toBuy`: up to 10 books NOT in the house, from Open Library search by my top 3 authors and genres,
-    excluding owned ISBNs/titles. Cached 24 h server-side; on upstream failure `toBuy: []`
-    and `toBuyError: "upstream_unavailable"`. `BuyIdea = { title, authors, isbn13|null, coverSourceUrl|null, reason: Reason }`.
+  - `onShelf`: books in the house not read by me (nor being read by me), scored by shared authors (+3), shared genres (+1 each,
+    max 3) with books I finished, household comments count (+0.5 each, max 2; comments of the other members); available ones first,
+    then by score, then newest added. Up to 20, zero-score books included (a new member still gets ideas).
+    `featured` is the first available book of that order (a quoted one wins a tie), not repeated in `onShelf`; null when nothing is available.
+    `Reco = { book: BookSummary, reasons: Reason[], quote: { author: {name,color}, text } | null }` — `quote` is the latest
+    comment of another member. `Reason = { kind: "author"|"genre"|"household", ref: string, because?: string[] }`
+    (the app renders the sentence): `ref` is the shared author / genre, or for `household` the latest reviewer's name;
+    `because` lists up to 2 titles I finished that share it ("Because you read Dune and Foundation").
+  - `toBuy`: up to 10 books NOT in the house, from Open Library `search.json` by my top 3 authors and top 3 genres
+    (most frequent among books I finished), alternating between searches, excluding owned ISBNs/titles (case and accents
+    ignored). Each search is cached 24 h server-side (failed ones are not cached; ownership is re-checked on every
+    request); 5 s timeout. When every search fails: `toBuy: []` and `toBuyError: "upstream_unavailable"`.
+    `BuyIdea = { title, authors, isbn13|null, coverSourceUrl|null /* covers.openlibrary.org/b/id/<id>-L.jpg */, reason: Reason }`.
 
 ### Realtime
 - `GET /api/events` WebSocket (`@fastify/websocket`, same LAN guard). The server pushes `{ type: "books.changed"|"profiles.changed"|"comments.changed", id? }`
