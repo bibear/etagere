@@ -63,6 +63,12 @@ App code layout: routes in `app/app/` (expo-router; tabs in `app/app/(tabs)/`: `
 `X-Etagere-Profile`; feature API helpers go next to `app/src/api/client.ts`). Component tests use
 `renderWithProviders()` and `fakeFetch()` from `app/src/test/`.
 
+Stack routes: `/onboarding` (first launch; the tabs layout redirects there while the device has no
+profile), `/server` (server settings), `/book/[id]` (book detail), `/profile` (profile settings).
+TanStack Query keys live in `app/src/api/queryKeys.ts`: everything about books under `['books']`
+(lists `['books','list',params]`, detail `['books','detail',id]`), comments under `['comments']`,
+the header profile's views under `['me']` — invalidating a prefix refreshes all of it.
+
 ## i18n
 
 French and English. Dictionaries live in `packages/shared/src/i18n/{fr,en}.ts` with the same keys

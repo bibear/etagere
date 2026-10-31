@@ -50,6 +50,9 @@ export const fr = {
     privacyNote: 'Pas de compte, pas de mot de passe : ton profil reste sur ce téléphone.',
     enter: 'Entrer dans la bibliothèque',
     enterServerAddress: "Saisir l'adresse du serveur",
+    searching: 'Recherche de la bibliothèque…',
+    libraryNotFound: 'Aucune bibliothèque trouvée',
+    libraryNotFoundHint: 'Vérifie que le serveur tourne sur le Wi-Fi de la maison.',
   },
   library: {
     title: 'La bibliothèque',
@@ -119,6 +122,17 @@ export const fr = {
   },
   server: {
     unreachable: 'Serveur injoignable — dernière copie affichée',
+  },
+  serverSettings: {
+    title: 'Adresse du serveur',
+    subtitle: "L'ordinateur de la maison où tourne le serveur Étagère.",
+    addressLabel: 'Adresse',
+    addressHint: 'Par exemple 192.168.1.20 ou etagere.local (port 4848 par défaut).',
+    test: "Tester l'adresse",
+    saveAndUse: 'Enregistrer',
+    found: 'Bibliothèque « {{name}} » trouvée · version {{version}}',
+    invalidAddress: "Cette adresse n'est pas valide.",
+    useDefault: "Revenir à l'adresse par défaut",
   },
   errors: {
     invalid_input: 'Certaines informations ne sont pas valides.',

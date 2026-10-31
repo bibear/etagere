@@ -6,8 +6,14 @@ export interface FakeResponse {
 
 export interface FakeFetch {
   fetch: typeof fetch;
-  /** Every request received, in order: method, path (with query), headers, parsed body. */
-  calls: { method: string; path: string; headers: Record<string, string>; body: unknown }[];
+  /** Every request received, in order: method, path (with query), headers, parsed body, full URL. */
+  calls: {
+    method: string;
+    path: string;
+    headers: Record<string, string>;
+    body: unknown;
+    url: string;
+  }[];
 }
 
 /**
@@ -24,7 +30,13 @@ export function fakeFetch(
     const method = (init.method ?? 'GET').toUpperCase();
     const path = `${url.pathname}${url.search}`;
     const body = typeof init.body === 'string' ? JSON.parse(init.body) : undefined;
-    calls.push({ method, path, headers: { ...(init.headers as Record<string, string>) }, body });
+    calls.push({
+      method,
+      path,
+      headers: { ...(init.headers as Record<string, string>) },
+      body,
+      url: url.toString(),
+    });
     const route = routes[`${method} ${path}`] ?? routes[`${method} ${url.pathname}`];
     if (route === 'offline') throw new TypeError('Network request failed');
     const answer =

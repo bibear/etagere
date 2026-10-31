@@ -50,6 +50,9 @@ export const en: Dictionary = {
     privacyNote: 'No account, no password: your profile stays on this phone.',
     enter: 'Enter the library',
     enterServerAddress: 'Type the server address',
+    searching: 'Looking for the library…',
+    libraryNotFound: 'No library found',
+    libraryNotFoundHint: 'Check that the server is running on the home Wi-Fi.',
   },
   library: {
     title: 'The library',
@@ -119,6 +122,17 @@ export const en: Dictionary = {
   },
   server: {
     unreachable: 'Server unreachable — showing the last copy',
+  },
+  serverSettings: {
+    title: 'Server address',
+    subtitle: 'The computer at home running the Étagère server.',
+    addressLabel: 'Address',
+    addressHint: 'For example 192.168.1.20 or etagere.local (port 4848 by default).',
+    test: 'Test the address',
+    saveAndUse: 'Save',
+    found: 'Library “{{name}}” found · version {{version}}',
+    invalidAddress: 'This address is not valid.',
+    useDefault: 'Back to the default address',
   },
   errors: {
     invalid_input: 'Some information is not valid.',

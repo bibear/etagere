@@ -8,10 +8,20 @@ import LibraryScreen from '../../app/(tabs)/index';
 import ReadingsScreen from '../../app/(tabs)/readings';
 import ScanScreen from '../../app/(tabs)/scan';
 import { AppProviders } from '../components/AppProviders';
+import { fakeFetch } from '../test/fakeFetch';
+import { booksResponse } from '../test/fixtures';
+import { TEST_PROFILE } from '../test/render';
+
+const api = fakeFetch({ 'GET /api/books': { body: booksResponse([]) } });
 
 const routes = (locale: 'fr' | 'en') => ({
   _layout: () => (
-    <AppProviders locale={locale} scheme="light" session={{ profile: null, serverUrl: 'http://t' }}>
+    <AppProviders
+      locale={locale}
+      scheme="light"
+      fetch={api.fetch}
+      session={{ profile: TEST_PROFILE, serverUrl: 'http://t' }}
+    >
       <Slot />
     </AppProviders>
   ),

@@ -38,6 +38,11 @@ export class ApiClient {
     this.fetchImpl = fetchImpl ?? ((...args) => globalThis.fetch(...args));
   }
 
+  /** The same client (network, profile) pointed at another server, e.g. to test an address. */
+  withBaseUrl(baseUrl: string): ApiClient {
+    return new ApiClient({ baseUrl, profileId: this.profileId, fetch: this.fetchImpl });
+  }
+
   /** Absolute URL of a server-relative path such as a `coverUrl`. */
   url(path: string): string {
     return `${this.baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;

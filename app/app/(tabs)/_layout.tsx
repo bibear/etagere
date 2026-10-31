@@ -1,8 +1,9 @@
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import type { ColorValue } from 'react-native';
 
 import { Icon, type IconName } from '../../src/components/Icon';
 import { useI18n } from '../../src/i18n/I18nProvider';
+import { useSession } from '../../src/session/SessionProvider';
 import { useTheme } from '../../src/theme/ThemeProvider';
 
 const tabIcon =
@@ -12,6 +13,10 @@ const tabIcon =
 export default function TabsLayout() {
   const { colors, fonts } = useTheme();
   const { t } = useI18n();
+  const { status, profile } = useSession();
+  // First launch: the onboarding shows before the tabs while this device has no profile.
+  if (status === 'loading') return null;
+  if (!profile) return <Redirect href="/onboarding" />;
   return (
     <Tabs
       screenOptions={{
