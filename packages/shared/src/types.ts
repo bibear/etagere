@@ -110,7 +110,10 @@ export interface Comment {
 
 export interface Reason {
   kind: 'author' | 'genre' | 'household';
+  /** The shared author or genre, or the name of the member whose review counts (household). */
   ref: string;
+  /** author / genre on the shelf: up to 2 titles I finished that share it ("because you read …"). */
+  because?: string[];
 }
 
 export interface Reco {
