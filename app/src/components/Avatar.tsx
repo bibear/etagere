@@ -1,3 +1,4 @@
+import { textColorOn } from '@etagere/shared';
 import { Text, View } from 'react-native';
 
 import { useTheme } from '../theme/ThemeProvider';
@@ -5,7 +6,7 @@ import { useTheme } from '../theme/ThemeProvider';
 /** First letter of a name, upper-cased ("" for a blank name). */
 export const initialOf = (name: string): string => name.trim().charAt(0).toLocaleUpperCase();
 
-/** A profile's round avatar: its initial in white on its color. Decorative (name shown nearby). */
+/** A profile's round avatar: its initial on its color (white or dark ink, whichever reads). Decorative (name shown nearby). */
 export function Avatar({
   name,
   color,
@@ -36,7 +37,7 @@ export function Avatar({
     >
       <Text
         style={{
-          color: '#FFFFFF',
+          color: textColorOn(color),
           fontFamily: theme.fonts.bodySemiBold,
           fontSize: Math.round(size * 0.4),
         }}

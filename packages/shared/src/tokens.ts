@@ -76,6 +76,35 @@ export const PROFILE_COLORS = [
 ] as const;
 export type ProfileColorKey = (typeof PROFILE_COLORS)[number]['key'];
 
+const DARK_TEXT = '#16201B';
+const LIGHT_TEXT = '#FFFFFF';
+
+/** WCAG relative luminance of a `#RRGGBB` color. */
+function luminance(hex: string): number {
+  const channels = [1, 3, 5].map((start) => parseInt(hex.slice(start, start + 2), 16) / 255);
+  const [r, g, b] = channels.map((c) =>
+    c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4,
+  ) as [number, number, number];
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/** WCAG contrast ratio between two `#RRGGBB` colors (1 to 21). */
+export function contrastRatio(a: string, b: string): number {
+  const [light, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x) as [number, number];
+  return (light + 0.05) / (dark + 0.05);
+}
+
+/**
+ * Text color for initials drawn on a profile color: white, or dark ink when it reads better
+ * (ochre, pale custom colors). An invalid color gets white.
+ */
+export function textColorOn(background: string): string {
+  if (!/^#[0-9a-f]{6}$/i.test(background)) return LIGHT_TEXT;
+  return contrastRatio(background, DARK_TEXT) > contrastRatio(background, LIGHT_TEXT)
+    ? DARK_TEXT
+    : LIGHT_TEXT;
+}
+
 /** Generated-cover palette of the design, with the text color readable on each background. */
 export const COVER_PALETTE = [
   { background: '#B5523B', foreground: '#FFFFFF' },

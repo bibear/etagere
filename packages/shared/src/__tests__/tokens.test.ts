@@ -1,4 +1,11 @@
-import { COVER_PALETTE, PROFILE_COLORS, coverColorsFor, palettes } from '../tokens';
+import {
+  COVER_PALETTE,
+  PROFILE_COLORS,
+  contrastRatio,
+  coverColorsFor,
+  palettes,
+  textColorOn,
+} from '../tokens';
 
 describe('palettes', () => {
   it('light and dark define the same tokens', () => {
@@ -55,5 +62,26 @@ describe('coverColorsFor', () => {
   it('pins known values so covers never change between releases', () => {
     expect(coverColorsFor('Dune').background).toMatchInlineSnapshot(`"#1E2A33"`);
     expect(coverColorsFor('Sapiens').background).toMatchInlineSnapshot(`"#6B4E8A"`);
+  });
+});
+
+describe('textColorOn', () => {
+  it.each([
+    ['#1F6B4A', '#FFFFFF'],
+    ['#2C4A6B', '#FFFFFF'],
+    ['#B5523B', '#FFFFFF'],
+    ['#6B4E8A', '#FFFFFF'],
+    ['#C08A1E', '#16201B'],
+    ['#FFFFFF', '#16201B'],
+    ['#f5e9c8', '#16201B'],
+    ['not-a-color', '#FFFFFF'],
+  ])('%s → %s', (background, text) => {
+    expect(textColorOn(background)).toBe(text);
+  });
+
+  it('keeps initials at WCAG AA contrast on every design profile color', () => {
+    for (const { value } of PROFILE_COLORS) {
+      expect(contrastRatio(value, textColorOn(value))).toBeGreaterThanOrEqual(4.5);
+    }
   });
 });

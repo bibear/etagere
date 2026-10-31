@@ -1,4 +1,10 @@
-import type { BookCounts, BookFilter, BookSort, BookSummary } from '@etagere/shared';
+import {
+  type BookCounts,
+  type BookFilter,
+  type BookSort,
+  type BookSummary,
+  textColorOn,
+} from '@etagere/shared';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -185,7 +191,13 @@ export default function LibraryScreen() {
             onPress={() => router.push('/profile')}
             style={[styles.profileButton, { backgroundColor: profile.color }]}
           >
-            <Text style={{ color: '#FFFFFF', fontFamily: fonts.bodySemiBold, fontSize: 16 }}>
+            <Text
+              style={{
+                color: textColorOn(profile.color),
+                fontFamily: fonts.bodySemiBold,
+                fontSize: 16,
+              }}
+            >
               {initialOf(profile.name)}
             </Text>
           </Pressable>
