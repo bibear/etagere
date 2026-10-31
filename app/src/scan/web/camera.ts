@@ -90,16 +90,59 @@ export function startLiveScan({
   };
 }
 
-/** Decodes one picture (the photo fallback). `loadImage` turns the file into an image element. */
+/** Longest side, in pixels, of the turned copies: phone photos are much larger than needed. */
+const MAX_SIDE = 1600;
+
+/**
+ * The picture as taken, then turned a quarter, a half and three quarters (browser only):
+ * a barcode photographed sideways or upside down still reads. Copies are made lazily, only
+ * when the previous orientation found nothing.
+ */
+export function* photoCandidates(image: HTMLImageElement): Generator<DecodeSource> {
+  yield image;
+  const width = image.naturalWidth;
+  const height = image.naturalHeight;
+  if (!width || !height || typeof document === 'undefined') return;
+  const scale = Math.min(1, MAX_SIDE / Math.max(width, height));
+  const w = Math.round(width * scale);
+  const h = Math.round(height * scale);
+  for (const quarter of [1, 2, 3]) {
+    const canvas = document.createElement('canvas');
+    const sideways = quarter % 2 === 1;
+    canvas.width = sideways ? h : w;
+    canvas.height = sideways ? w : h;
+    const context = canvas.getContext('2d');
+    if (!context) return;
+    context.translate(canvas.width / 2, canvas.height / 2);
+    context.rotate((quarter * Math.PI) / 2);
+    context.drawImage(image, -w / 2, -h / 2, w, h);
+    yield canvas;
+  }
+}
+
+/**
+ * Decodes one picture (the photo fallback). `loadImage` turns the file into an image element;
+ * every orientation from `candidates` is tried until one holds a barcode.
+ */
 export async function decodePhoto(
   file: Blob,
   {
     decoder,
     loadImage,
-  }: { decoder: BarcodeDecoder; loadImage: (file: Blob) => Promise<HTMLImageElement> },
+    candidates = photoCandidates,
+  }: {
+    decoder: BarcodeDecoder;
+    loadImage: (file: Blob) => Promise<HTMLImageElement>;
+    candidates?: (image: HTMLImageElement) => Iterable<DecodeSource>;
+  },
 ): Promise<string | null> {
   try {
-    return await decoder.decode(await loadImage(file));
+    const image = await loadImage(file);
+    for (const candidate of candidates(image)) {
+      const code = await decoder.decode(candidate);
+      if (code) return code;
+    }
+    return null;
   } catch {
     return null;
   }

@@ -202,6 +202,46 @@ describe('photo fallback', () => {
     expect(decoder.decode).toHaveBeenCalledWith(image);
   });
 
+  it('tries the picture turned a quarter, a half and three quarters, so its orientation does not matter', async () => {
+    const image = {} as HTMLImageElement;
+    const turned = [90, 180, 270].map((angle) => ({ angle }) as unknown as DecodeSource);
+    const decoder: BarcodeDecoder = {
+      decode: jest.fn(async (candidate: DecodeSource) =>
+        candidate === turned[1] ? '9782352940159' : null,
+      ),
+    };
+
+    await expect(
+      decodePhoto(new Blob(['x']), {
+        decoder,
+        loadImage: async () => image,
+        candidates: function* (picture) {
+          yield picture;
+          yield* turned;
+        },
+      }),
+    ).resolves.toBe('9782352940159');
+    expect(decoder.decode).toHaveBeenNthCalledWith(1, image);
+    expect(decoder.decode).toHaveBeenCalledTimes(3);
+  });
+
+  it('answers null when no orientation of the picture holds a barcode', async () => {
+    const decoder: BarcodeDecoder = { decode: jest.fn(async () => null) };
+    const turned = [90, 180, 270].map((angle) => ({ angle }) as unknown as DecodeSource);
+
+    await expect(
+      decodePhoto(new Blob(['x']), {
+        decoder,
+        loadImage: async () => ({}) as HTMLImageElement,
+        candidates: function* (picture) {
+          yield picture;
+          yield* turned;
+        },
+      }),
+    ).resolves.toBeNull();
+    expect(decoder.decode).toHaveBeenCalledTimes(4);
+  });
+
   it('answers null for an unreadable picture', async () => {
     const decoder: BarcodeDecoder = { decode: jest.fn(async () => null) };
     const broken = async () => {
